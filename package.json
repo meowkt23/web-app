@@ -9,5 +9,9 @@
   "author": "Katya Smirnova <30217543@blackpool.ac.uk",
   "license": "ISC",
   "repository": "github:meowkt23/web-app",
-  "description": "A package containing the web app to access Healthway Hospitals data."
+  "description": "A package containing the web app to access Healthway Hospitals data.",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3"
+  }
 }
