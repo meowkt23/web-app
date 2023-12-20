@@ -10,7 +10,7 @@ app.get('/staff', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile('https://raw.https://github.com/meowkt23/web-app/index.html');
+    res.sendFile('https://github.com/meowkt23/web-app/index.html');
 });
 
 const PORT = process.env.PORT || 3000;
