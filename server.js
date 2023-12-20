@@ -9,8 +9,11 @@ app.get('/staff', async (req, res) => {
     res.json(appointments);
 });
 
+const staticPath = path.join(__dirname, 'public');
+app.use(express.static(staticPath));
+
 app.get('/', (req, res) => {
-    res.sendFile('https://github.com/meowkt23/web-app/index.html');
+    res.sendFile(__dirname + 'index.html', { root: staticPath });
 });
 
 const PORT = process.env.PORT || 3000;
