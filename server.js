@@ -14,7 +14,7 @@ const staticPath = path.join(__dirname, 'public');
 app.use(express.static(staticPath));
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + 'index.html', { root: staticPath });
+    res.sendFile('index.html', { root: staticPath });
 });
 
 const PORT = process.env.PORT || 3000;
