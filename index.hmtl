@@ -1,1 +1,24 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, inital-scale=1.0">
+    <title>Healthway Hospitals Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="#staff"staff</a></li>
+        </ul>
+    </nav>
+
+    <section id="staff">
+        <h2>Staff</h2>
+        <div id="appointments-data">
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
