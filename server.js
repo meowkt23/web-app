@@ -9,11 +9,21 @@ const app = express();
 app.get('/', async (req, res) => {
     try {
         const response = await fetch('https://raw.githubusercontent.com/meowkt23/web-app/main/index.html');
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch HTML from GitHub: ${response.statusText}`);
+        }
+
         const html = await response.text();
         res.send(html);
     } catch (error) {
-        console.error('Error fetching HTML from GitHub:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error fetching HTML from GitHub:', error.message);
+
+        if (error.message.includes('404')) {
+            res.status(404).send('Not Found');
+        } else {
+            res.status(500).send('Internal Server Error');
+        }
     }
 });
 
