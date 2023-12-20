@@ -1,20 +1,18 @@
 const express = require('express');
 const app = express();
-const path = require('path');
-app.use(express.json());
+const fetch = require('node-fetch');
 
 const staff = require('./staff');
 
-app.get('/staff', async (req, res) => {
-    const staff = await staff.find();
-    res.json(appointments);
-});
-
-const staticPath = path.join(__dirname, 'public');
-app.use(express.static(staticPath));
-
-app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: staticPath });
+app.get('/', async (req, res) => {
+    try {
+        const response = await fetch('https://github.com/meowkt23/web-app/index.html');
+        const html = await response.text();
+        res.send(html);
+    } catch (error) {
+        console.error('Error fetching HTML from GitHub:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 const PORT = process.env.PORT || 3000;
