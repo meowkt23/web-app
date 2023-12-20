@@ -6,4 +6,4 @@ const staffSchema = new mongoose.Schema({
     lastName: String
 });
 
-module.exports = mongoose.model('Staff', staffSchema);
+module.exports = mongoose.model('staff', staffSchema);
