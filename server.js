@@ -6,6 +6,8 @@ const require = createRequire(import.meta.url);
 
 const app = express();
 
+app.use(express.static('public'));
+
 app.get('/', async (req, res) => {
     try {
         const response = await fetch('https://raw.githubusercontent.com/meowkt23/web-app/main/index.html');
@@ -31,5 +33,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-app.use(express.static('public'));
