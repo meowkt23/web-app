@@ -4,13 +4,15 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 
+const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/index.html';
+
 const app = express();
 
 app.use(express.static('public'));
 
 app.get('/', async (req, res) => {
     try {
-        const response = await fetch('https://raw.githubusercontent.com/meowkt23/web-app/main/index.html');
+        const response = await fetch(githubUrl);
         
         if (!response.ok) {
             throw new Error(`Failed to fetch HTML from GitHub: ${response.statusText}`);
