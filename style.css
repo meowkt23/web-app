@@ -46,7 +46,7 @@ section h2 {
 }
 
 @media (max-width: 768px) {
-    nac ul li {
+    nav ul li {
         display: block;
         margin: 10px 0px;
     }
