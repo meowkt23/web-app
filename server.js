@@ -8,7 +8,7 @@ const app = express();
 
 app.get('/', async (req, res) => {
     try {
-        const response = await fetch('https://github.com/meowkt23/web-app/index.html');
+        const response = await fetch('https://raw.githubusercontent.com/meowkt23/web-app/main/index.html');
         const html = await response.text();
         res.send(html);
     } catch (error) {
