@@ -23,7 +23,7 @@ app.get('/', async (req, res) => {
 
         if (error instanceof fetch.FetchError || error.type === 'system' || error.code === 'ECONNRESET') {
             res.status(500).send('Network Error');
-        } else if (response && response.status === 404) {
+        } else if (error instanceof fetch.Response && error.status === 404) {
             res.status(404).send('Not Found');
         } else {
             res.status(500).send('Internal Server Error');
