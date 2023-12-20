@@ -1,0 +1,13 @@
+{
+  "name": "package",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Katya Smirnova <30217543@blackpool.ac.uk",
+  "license": "ISC",
+  "repository": "github:meowkt23/web-app",
+  "description": "A package containing the web app to access Healthway Hospitals data."
+}
