@@ -1,8 +1,10 @@
-const express = require('express');
-const app = express();
-const fetch = require('node-fetch');
+import express from 'express';
+import fetch from 'node-fetch';
+import { createRequire } from 'module';
 
-const staff = require('./staff');
+const require = createRequire(import.meta.url);
+
+const app = express();
 
 app.get('/', async (req, res) => {
     try {
