@@ -3,7 +3,6 @@ const app = express();
 app.use(express.json());
 
 const staff = require('./staff');
-const staff = require('./staff');
 
 app.get('/staff', async (req, res) => {
     const staff = await staff.find();
