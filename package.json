@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "Katya Smirnova <30217543@blackpool.ac.uk>",
   "license": "ISC",
-  "repository": "github:meowkt23/web-app",
+  "repository": "https://github.com/meowkt23/web-app/main/index.html",
   "description": "A package containing the web app to access Healthway Hospitals data.",
   "dependencies": {
     "esm": "3.2.25",
