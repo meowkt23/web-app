@@ -22,6 +22,10 @@ function displayStaff(staffArray) {
     });
 }
 
+// Add an event listener to the form with the ID 'staff-form'
 document.getElementById('staff-form').addEventListener('submit', function (e) {
+    // Prevent the default form submission behavior
     e.preventDefault();
+    // The code within this function will be executed when the form is submitted
+    // Add your form submission logic or other actions here
 });
