@@ -1,6 +1,6 @@
 // Import required modules
 const express = require('express');
-const fetch = require('node-fetch').default; // Import 'node-fetch' for making HTTP requests
+const fetch = require('node-fetch'); // Import 'node-fetch' for making HTTP requests
 const connectToMongoDB = require('./database'); // Update the path accordingly
 
 // Create an Express application
