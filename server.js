@@ -1,25 +1,25 @@
 // Import required modules
-import express from 'express';
-import fetch from 'node-fetch';
-import { createRequire } from 'module';
-
-// Create a 'require' function using 'createRequire' from 'module'
-const require = createRequire(import.meta.url);
-
-// Set the GitHub URL for fetching HTML content (fallback to a default URL)
-const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/index.html';
+const express = require('express');
 
 // Create an Express application
 const app = express();
 
+const Staff = require('./staff');
+
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
+
+// Set the GitHub URL for fetching HTML content (fallback to a default URL)
+const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/index.html';
 
 // Define a route for handling requests to the root path ('/')
 app.get('/', async (req, res) => {
     try {
+        // Dynamically import 'node-fetch' using dynamic import
+        const fetch = await import('node-fetch');
+
         // Fetch HTML content from the specified GitHub URL
-        const response = await fetch(githubUrl);
+        const response = await fetch.default(githubUrl); // Use fetch.default
 
         // Check if the response is successful
         if (!response.ok) {
@@ -29,11 +29,14 @@ app.get('/', async (req, res) => {
         // Read the HTML content from the response
         const html = await response.text();
 
+        // Log the HTML content (for debugging purposes)
+        //console.log('Fetched HTML:', html);
+
         // Send the HTML content as the response to the client
         res.send(html);
     } catch (error) {
-        // Handle errors that may occur during the fetch operation
-        console.error('Error fetching HTML from GitHub:', error.message);
+        // Handle errors and log them
+        console.error('Error fetching or sending HTML:', error);
 
         // Check for specific error types and send appropriate HTTP responses
         if (error instanceof fetch.FetchError || error.type === 'system' || error.code === 'ECONNRESET') {

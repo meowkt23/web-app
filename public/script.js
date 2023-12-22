@@ -29,3 +29,29 @@ document.getElementById('staff-form').addEventListener('submit', function (e) {
     // The code within this function will be executed when the form is submitted
     // Add your form submission logic or other actions here
 });
+
+//fetch staff data from the API
+function fetchStaffData() {
+    //use the fetch function to make a GET request to the '/api/staff' endpoint
+    fetch('/api/staff')
+      //handle response from the server
+      .then(response => {
+        //check if response status is OK (status code 200-299)
+        if (!response.ok) {
+          //if not OK, throw an error to be caught by the catch block
+          throw new Error('Network response was not ok');
+        }
+        //if OK, parse the response body as JSON and return it
+        return response.json();
+      })
+      //handle parsed JSON data
+      .then(data => {
+        //call the createStaffChart function with the retrieved data
+        createStaffChart(data);
+      })
+      //handle any errors that occurred during the fetch
+      .catch(error => {
+        //log error to console
+        console.error('Error', error);
+      });
+  }

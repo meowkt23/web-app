@@ -1,0 +1,2 @@
+error: MongoDB connection error: option usefindandmodify is not supported {"timestamp":"2023-12-21T20:34:24.158Z"}
+error: MongoDB connection error: Invalid scheme, expected connection string to start with "mongodb://" or "mongodb+srv://" {"timestamp":"2023-12-21T20:49:37.758Z"}
