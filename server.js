@@ -4,6 +4,10 @@ const express = require('express');
 // Create an Express application
 const app = express();
 
+// Import database connection
+require('./database');
+
+//Import models
 const Staff = require('./staff');
 
 // Serve static files from the 'public' directory
