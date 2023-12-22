@@ -17,8 +17,10 @@ const logger = winston.createLogger({
 
 // MongoDB connection string
 const connectionString = process.env.MONGODB_CONNECTION_STRING;
+console.log('MongoDB Connection String:', process.env.MONGODB_CONNECTION_STRING);
 
 // Connect to MongoDB using Mongoose
+console.log('Attempting to connect to MongoDB...');
 mongoose.connect(connectionString)
   .then(() => {
     logger.info("Connected to MongoDB");
