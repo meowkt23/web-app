@@ -8,8 +8,6 @@
     <title>Healthway Hospitals Dashboard</title>
     <!-- Link to  external stylesheet for styling -->
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -27,7 +25,7 @@
         <!-- Heading for the 'staff' section -->
         <h2>Staff</h2>
         <!-- Container for displaying staff data -->
-        <div id="staff-data"><canvas id="staffChart"></canvas></section></div>
+        <div id="staff-data"><canvas id="staffChart"></canvas></div>
     </section>
 
     <!-- Form for adding staff -->
@@ -38,6 +36,7 @@
     </form>
 
     <!-- Include a JavaScript file for dynamic behavior -->
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ const isDevelopment = nodeEnv === 'development';
 
 // Check if the MongoDB connection string is defined
 const connectionString = process.env.MONGODB_CONNECTION_STRING || 'default_connection_string';
-console.log(`[${new Date().toISOString()}] MongoDB Connection String:`, connectionString);
+console.log(`MongoDB conncetion string is defined`);
 
 // Create Winston logger instance
 const logLevel = isDevelopment ? 'debug' : 'info';
