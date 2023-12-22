@@ -1,4 +1,4 @@
-console.log("script.js is loaded");
+console.log("public/script.js is loaded");
 
 // Check if the code is running in a browser environment
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
