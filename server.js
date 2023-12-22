@@ -41,14 +41,14 @@ app.get('/', async (req, res) => {
         console.error('Error fetching or sending HTML:', error);
 
         // Check for specific error types and send appropriate HTTP responses
-        if (error instanceof fetch.FetchError || (error && error.type === 'system' && error.code === 'ECONNRESET')) {
-            res.status(500).send('Network Error');
-        } else if (error instanceof Object && error instanceof fetch.Response && error.status === 404) {
-         res.status(404).send('Not Found');
-        } else {
-            // Handle the case where 'error' is not an object
-            res.status(500).send('Internal Server Error');
-        }
+        //if (error instanceof fetch.FetchError || (error && error.type === 'system' && error.code === 'ECONNRESET')) {
+        //    res.status(500).send('Network Error');
+        //} else if (error instanceof Object && error instanceof fetch.Response && error.status === 404) {
+        // res.status(404).send('Not Found');
+        //} else {
+        //    // Handle the case where 'error' is not an object
+        //    res.status(500).send('Internal Server Error');
+        //}
     }
 }
 );
