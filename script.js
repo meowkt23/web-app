@@ -1,12 +1,14 @@
-console.log("script.js is loaded")
+console.log("script.js is loaded");
 
-// Check if the document object is available (running in a browser environment)
-if (typeof document !== 'undefined') {
+// Check if the code is running in a browser environment
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    // Client-side code
+
     function fetchStaff() {
         fetch('/staff')
             .then(response => response.json())
             .then(data => {
-                console.log(data);            
+                console.log(data);
                 displayStaff(data);
             })
             .catch(error => console.error('Error fetching staff data:', error));
@@ -22,7 +24,7 @@ if (typeof document !== 'undefined') {
         });
     }
 
-    document.getElementById('staff-form').addEventListener('submit', function(e) {
+    document.getElementById('staff-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
         // Gather form data
@@ -40,16 +42,17 @@ if (typeof document !== 'undefined') {
             },
             body: JSON.stringify(staffData),
         })
-        .then(response => response.json())
-        .then(data => {
-            // Optionally update the UI or perform other actions
-            console.log('Staff added successfully:', data);
-        })
-        .catch(error => console.error('Error adding staff:', error));
+            .then(response => response.json())
+            .then(data => {
+                // Optionally update the UI or perform other actions
+                console.log('Staff added successfully:', data);
+            })
+            .catch(error => console.error('Error adding staff:', error));
     });
 
     // Initial fetch when the page loads
     fetchStaff();
 } else {
-    console.error("This script is running in a non-browser environment: client-side code will not execute");
+    // Server-side code
+    console.error("This script is intended to run in a browser environment.");
 }
