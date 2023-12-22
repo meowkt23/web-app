@@ -24,7 +24,7 @@ const logger = winston.createLogger({
 const connectionString = 'mongodb://healthway-hospitals-mongo-db:M2Wa1iLUAet2zSO4cwngAkm3ggLWahsnryPTckHwDayLNB33BmUeiPHT9jQjEloWVJ9IsXDCXGEWACDbnze9ig==@healthway-hospitals-mongo-db.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@healthway-hospitals-mongo-db@';
 
 // Connect to MongoDB using Mongoose
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(connectionString)
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.error("Could not connect to MongoDB: ", err)); // Fix the parameter name here
 

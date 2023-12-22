@@ -33,23 +33,29 @@ app.get('/', async (req, res) => {
         // Read the HTML content from the response
         const html = await response.text();
 
-        // Log the HTML content (for debugging purposes)
-        //console.log('Fetched HTML:', html);
-
         // Send the HTML content as the response to the client
         res.send(html);
     } catch (error) {
         // Handle errors and log them
         console.error('Error fetching or sending HTML:', error);
 
-        // Check for specific error types and send appropriate HTTP responses
-        if (error instanceof fetch.FetchError || error.type === 'system' || error.code === 'ECONNRESET') {
-            res.status(500).send('Network Error');
-        } else if (error instanceof fetch.Response && error.status === 404) {
-            res.status(404).send('Not Found');
-        } else {
-            res.status(500).send('Internal Server Error');
-        }
+// Check for specific error types and send appropriate HTTP responses
+if (error instanceof fetch.FetchError || (error && error.type === 'system' && error.code === 'ECONNRESET')) {
+    res.status(500).send('Network Error');
+} else if (error instanceof Object && error instanceof fetch.Response && error.status === 404) {
+    res.status(404).send('Not Found');
+} else {
+    // Log the error for further investigation
+    console.error('Error:', error);
+
+    // Handle the case where 'error' is not an object
+    if (error instanceof Object) {
+        res.status(500).send('Internal Server Error');
+    } else {
+        res.status(500).send('Unknown Error');
+    }
+}
+
     }
 });
 
