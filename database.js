@@ -33,13 +33,16 @@ const logger = winston.createLogger({
 // Connect to MongoDB using Mongoose and return a promise
 const connectToMongoDB = async () => {
   try {
+    console.log(`[${new Date().toISOString()}] Attempting to connect to MongoDB...`);
+
     await mongoose.connect(connectionString, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
-    logger.info("Connected to MongoDB");
+    console.log(`[${new Date().toISOString()}] Connected to MongoDB`);
   } catch (err) {
+    console.error(`[${new Date().toISOString()}] Could not connect to MongoDB:`, err);
     logger.error("Could not connect to MongoDB:", err);
     throw err; // Propagate the error to handle it in the server.js file
   }
@@ -53,16 +56,19 @@ const db = mongoose.connection;
 
 // Event listener for connection errors
 db.on('error', (err) => {
+  console.error(`[${new Date().toISOString()}] MongoDB connection error: ${err.message}`);
   logger.error(`MongoDB connection error: ${err.message}`);
 });
 
 db.once('open', () => {
+  console.log(`[${new Date().toISOString()}] Connected to MongoDB successfully`);
   logger.info('Connected to MongoDB successfully');
 });
 
 // Graceful Shutdown
 process.on('SIGINT', () => {
   db.close(() => {
+    console.log(`[${new Date().toISOString()}] MongoDB connection closed due to application termination`);
     logger.info('MongoDB connection closed due to application termination');
     process.exit(0);
   });
