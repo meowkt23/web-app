@@ -1,9 +1,6 @@
 // Import required modules
-const express = require('express');
-const fetch = require('node-fetch');
-
-// Enable ES module support
-require = require('esm')(module);
+import express from 'express';
+import fetch from 'node-fetch';
 
 // Create an Express application
 const app = express();
