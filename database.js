@@ -32,11 +32,7 @@ const logger = winston.createLogger({
 
 // Attempt to connect to MongoDB using Mongoose
 console.log(`[${new Date().toISOString()}] Attempting to connect to MongoDB...`);
-mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  // Add other options as needed
-})
+mongoose.connect(connectionString)
   .then(() => {
     logger.info("Connected to MongoDB");
   })
