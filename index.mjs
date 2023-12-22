@@ -1,12 +1,14 @@
 // Import required modules
 import express from 'express';
-import { connectToMongoDB } from './database'; // Import the connectToMongoDB function
-import './server.mjs';
-import './public/script.js';
-import './staff.js';
+import fetch from 'node-fetch';
+import pkg from './database.mjs';
+const { connectToMongoDB } = pkg;
 
 // Create an Express application
 const app = express();
+
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
 
 // Set the GitHub URL for fetching HTML content (fallback to a default URL)
 const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/index.html';

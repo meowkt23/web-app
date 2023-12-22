@@ -66,7 +66,7 @@ const connectToMongoDB = async () => {
 };
 
 // Export the connectToMongoDB function
-module.exports = connectToMongoDB;
+export { connectToMongoDB };
 
 // Log when the script is loaded
 console.log("database.js is loaded.");
