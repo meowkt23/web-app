@@ -2,12 +2,15 @@ const mongoose = require('mongoose');
 const winston = require('winston');
 require('dotenv').config();
 
+// Environment Configuration
+const nodeEnv = process.env.NODE_ENV || 'development';
+const isDevelopment = nodeEnv === 'development';
+
 // Check if the MongoDB connection string is defined
 const connectionString = process.env.MONGODB_CONNECTION_STRING || 'default_connection_string';
-console.log('MongoDB Connection String:', connectionString);
+console.log(`[${new Date().toISOString()}] MongoDB Connection String:`, connectionString);
 
 // Create Winston logger instance
-const isDevelopment = process.env.NODE_ENV === 'development';
 const logLevel = isDevelopment ? 'debug' : 'info';
 
 const logger = winston.createLogger({
@@ -17,14 +20,23 @@ const logger = winston.createLogger({
     winston.format.simple()
   ),
   transports: [
-    new winston.transports.Console(),
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.simple()
+      ),
+    }),
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
   ],
 });
 
 // Attempt to connect to MongoDB using Mongoose
-console.log('Attempting to connect to MongoDB...');
-mongoose.connect(connectionString)
+console.log(`[${new Date().toISOString()}] Attempting to connect to MongoDB...`);
+mongoose.connect(connectionString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  // Add other options as needed
+})
   .then(() => {
     logger.info("Connected to MongoDB");
   })
@@ -43,6 +55,14 @@ db.on('error', (err) => {
 
 db.once('open', () => {
   logger.info('Connected to MongoDB successfully');
+});
+
+// Graceful Shutdown
+process.on('SIGINT', () => {
+  db.close(() => {
+    logger.info('MongoDB connection closed due to application termination');
+    process.exit(0);
+  });
 });
 
 module.exports = db;
