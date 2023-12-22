@@ -19,7 +19,7 @@ const logger = winston.createLogger({
 const connectionString = process.env.MONGODB_CONNECTION_STRING;
 
 // Connect to MongoDB using Mongoose
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(connectionString)
   .then(() => {
     logger.info("Connected to MongoDB");
   })
