@@ -35,29 +35,23 @@ app.get('/', async (req, res) => {
 
         // Send the HTML content as the response to the client
         res.send(html);
-    } catch (error) {
+        } catch (error) {
+
         // Handle errors and log them
         console.error('Error fetching or sending HTML:', error);
 
-// Check for specific error types and send appropriate HTTP responses
-if (error instanceof fetch.FetchError || (error && error.type === 'system' && error.code === 'ECONNRESET')) {
-    res.status(500).send('Network Error');
-} else if (error instanceof Object && error instanceof fetch.Response && error.status === 404) {
-    res.status(404).send('Not Found');
-} else {
-    // Log the error for further investigation
-    console.error('Error:', error);
-
-    // Handle the case where 'error' is not an object
-    if (error instanceof Object) {
-        res.status(500).send('Internal Server Error');
-    } else {
-        res.status(500).send('Unknown Error');
+        // Check for specific error types and send appropriate HTTP responses
+        if (error instanceof fetch.FetchError || (error && error.type === 'system' && error.code === 'ECONNRESET')) {
+            res.status(500).send('Network Error');
+        } else if (error instanceof Object && error instanceof fetch.Response && error.status === 404) {
+         res.status(404).send('Not Found');
+        } else {
+            // Handle the case where 'error' is not an object
+            res.status(500).send('Internal Server Error');
+        }
     }
 }
-
-    }
-});
+);
 
 // Set the port for the server to listen on (use process.env.PORT or default to 3000)
 const PORT = process.env.PORT || 3000;
