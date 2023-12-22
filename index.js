@@ -1,14 +1,10 @@
 // Import required modules
-require('dotenv').config(); // Import and execute dotenv first
+require('dotenv').config();
 const express = require('express');
 const { connectToMongoDB } = require('./database'); // Update the import statement
-const fetch = require('node-fetch');
-
+const { MongoClient, ObjectId } = require('mongodb');
 // Create an Express application
 const app = express();
-
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
 
 // Set the GitHub URL for fetching HTML content (fallback to a default URL)
 const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/index.html';
@@ -16,8 +12,11 @@ const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/m
 // Define a route for handling requests to the root path ('/')
 app.get('/', async (req, res) => {
   try {
+    // Dynamically import fetch using import()
+    const fetch = await import('node-fetch');
+
     // Fetch HTML content from the specified GitHub URL using 'fetch' API
-    const response = await fetch(githubUrl);
+    const response = await fetch.default(githubUrl);
 
     // Check if the response is successful
     if (!response.ok) {

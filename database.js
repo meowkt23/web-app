@@ -1,10 +1,6 @@
-// database.js
-
+require('dotenv').config();
 const mongoose = require('mongoose');
 const winston = require('winston');
-require('dotenv').config();
-
-dotenv.config();
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 const isDevelopment = nodeEnv === 'development';
@@ -35,8 +31,6 @@ const connectToMongoDB = async () => {
   try {
     console.log(`[${new Date().toISOString()}] Attempting to connect to MongoDB...`);
     await mongoose.connect(connectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     });
     console.log(`[${new Date().toISOString()}] Connected to MongoDB`);
   } catch (err) {
@@ -49,5 +43,4 @@ const connectToMongoDB = async () => {
 // Log when the script is loaded
 console.log("database.js is loaded.");
 
-// Export connectToMongoDB as a CommonJS export
 module.exports = { connectToMongoDB };
