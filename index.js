@@ -1,8 +1,8 @@
 // Import required modules
-import express from 'express';
-import fetch from 'node-fetch';
-import pkg from './database.mjs';
-const { connectToMongoDB } = pkg;
+require('dotenv').config(); // Import and execute dotenv first
+const express = require('express');
+const { connectToMongoDB } = require('./database'); // Update the import statement
+const fetch = require('node-fetch');
 
 // Create an Express application
 const app = express();
