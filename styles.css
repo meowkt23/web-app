@@ -7,19 +7,21 @@
 
 /* Body styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     line-height: 1.6;
     padding: 20px;
-    background-color: white;
+    background-color: #f4f4f4; /* Light gray background */
+    color: #333; /* Dark text color */
 }
 
 /* Navigation styles */
 nav {
-    font-family: Arial, sans-serif;
-    background: dark gray;
+    font-family: 'Arial', sans-serif;
+    background: #003366; /* Dark blue background */
     color: white;
     padding: 10px 20px;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Navigation list styles */
@@ -34,10 +36,16 @@ nav ul li {
 }
 
 /* Navigation link styles */
-nav ul li {
+nav ul li a {
     color: white;
     text-decoration: none;
     font-weight: bold;
+    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+/* Change link color on hover */
+nav ul li a:hover {
+    color: #ff9900; /* Highlight color on hover */
 }
 
 /* Section styles */
@@ -46,13 +54,13 @@ section {
     padding: 20px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px black(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Section heading styles */
 section h2 {
     margin-bottom: 10px;
-    color: dark gray;
+    color: #003366; /* Dark blue heading color */
 }
 
 /* Media query for smaller screens (max-width: 768px) */
@@ -61,5 +69,10 @@ section h2 {
     nav ul li {
         display: block;
         margin: 10px 0px;
+    }
+
+    /* Add additional styles for smaller screens if needed */
+    body {
+        font-size: 16px;
     }
 }
