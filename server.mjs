@@ -3,7 +3,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 
 // Import database connection
-import './database.mjs';
+import './database.js';
 console.log('Database module loaded.');
 
 // Create an Express application
