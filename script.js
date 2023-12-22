@@ -1,7 +1,12 @@
+console.log("script.js is loaded")
+
 function fetchStaff() {
-    fetch('/api/staff')
+    fetch('/staff')
         .then(response => response.json())
-        .then(data => displayStaff(data))
+        .then(data => {
+            console.log(data);            
+            displayStaff(data);
+        })
         .catch(error => console.error('Error fetching staff data:', error));
 }
 

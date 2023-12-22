@@ -2,9 +2,16 @@ const mongoose = require('mongoose');
 const winston = require('winston');
 require('dotenv').config();
 
+// Check if the MongoDB connection string is defined
+const connectionString = process.env.MONGODB_CONNECTION_STRING || 'default_connection_string';
+console.log('MongoDB Connection String:', connectionString);
+
 // Create Winston logger instance
+const isDevelopment = process.env.NODE_ENV === 'development';
+const logLevel = isDevelopment ? 'debug' : 'info';
+
 const logger = winston.createLogger({
-  level: 'info',
+  level: logLevel,
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.simple()
@@ -15,11 +22,7 @@ const logger = winston.createLogger({
   ],
 });
 
-// MongoDB connection string
-const connectionString = process.env.MONGODB_CONNECTION_STRING;
-console.log('MongoDB Connection String:', process.env.MONGODB_CONNECTION_STRING);
-
-// Connect to MongoDB using Mongoose
+// Attempt to connect to MongoDB using Mongoose
 console.log('Attempting to connect to MongoDB...');
 mongoose.connect(connectionString)
   .then(() => {
@@ -27,6 +30,7 @@ mongoose.connect(connectionString)
   })
   .catch((err) => {
     logger.error("Could not connect to MongoDB:", err);
+    // Optionally: exit the application or take other action
   });
 
 // Get the default Mongoose connection
