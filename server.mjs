@@ -2,6 +2,10 @@
 import express from 'express';
 import fetch from 'node-fetch';
 
+// Import database connection
+import './database.mjs';
+console.log('Database module loaded.');
+
 // Create an Express application
 const app = express();
 
