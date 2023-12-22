@@ -30,16 +30,23 @@ const logger = winston.createLogger({
   ],
 });
 
-// Attempt to connect to MongoDB using Mongoose
-console.log(`[${new Date().toISOString()}] Attempting to connect to MongoDB...`);
-mongoose.connect(connectionString)
-  .then(() => {
+// Connect to MongoDB using Mongoose and return a promise
+const connectToMongoDB = async () => {
+  try {
+    await mongoose.connect(connectionString, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
     logger.info("Connected to MongoDB");
-  })
-  .catch((err) => {
+  } catch (err) {
     logger.error("Could not connect to MongoDB:", err);
-    // Optionally: exit the application or take other action
-  });
+    throw err; // Propagate the error to handle it in the server.js file
+  }
+};
+
+// Export the connectToMongoDB function
+module.exports = connectToMongoDB;
 
 // Get the default Mongoose connection
 const db = mongoose.connection;
@@ -60,5 +67,3 @@ process.on('SIGINT', () => {
     process.exit(0);
   });
 });
-
-module.exports = db;
