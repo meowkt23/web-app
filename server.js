@@ -1,9 +1,9 @@
 // Import required modules
-import express from 'express';
-import fetch from 'node-fetch';
+const express = require('express');
+const fetch = require('node-fetch');
 
 // Import database connection
-import './database.js';
+require('./database.js');
 console.log('Database module loaded.');
 
 // Create an Express application
