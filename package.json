@@ -1,0 +1,32 @@
+{
+  "name": "package",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "client/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-client": "npm start --prefix client",
+    "start-server": "node server/index.js",
+    "start": "concurrently \"npm run start-client\" \"npm run start-server\""
+  },
+  "keywords": [],
+  "author": "Katya Smirnova <30217543@blackpool.ac.uk>",
+  "license": "ISC",
+  "repository": "https://github.com/meowkt23/web-app",
+  "description": "A package containing the web app to access Healthway Hospitals data.",
+  "dependencies": {
+    "chart.js": "^4.4.1",
+    "dotenv": "^16.3.1",
+    "esm": "^3.2.25",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3",
+    "node-fetch": "^3.3.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "webpack-dev-server": "^4.15.1"
+  }
+}

@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+// Example component in React for displaying staff members
+import React, { useState, useEffect } from 'react';
 
-function App() {
+const StaffList = () => {
+  const [staffMembers, setStaffMembers] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from your Express API
+    fetch('/api/staff')
+      .then((response) => response.json())
+      .then((data) => setStaffMembers(data))
+      .catch((error) => console.error('Error fetching staff members:', error));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h2>Staff Members</h2>
+      <ul>
+        {staffMembers.map((staff) => (
+          <li key={staff._id}>{`${staff.firstName} ${staff.lastName}`}</li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
-export default App;
+export default StaffList;
