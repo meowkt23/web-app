@@ -1,13 +1,13 @@
 // Import required modules
 require('dotenv').config();
 const express = require('express');
-const { connectToMongoDB } = require('./database'); // Update the import statement
+const { connectToMongoDB } = require('./server/database'); // Update the import statement
 const { MongoClient, ObjectId } = require('mongodb');
 // Create an Express application
 const app = express();
 
 // Set the GitHub URL for fetching HTML content (fallback to a default URL)
-const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/index.html';
+const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
 
 // Define a route for handling requests to the root path ('/')
 app.get('/', async (req, res) => {
