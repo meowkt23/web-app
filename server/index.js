@@ -1,7 +1,7 @@
 // Import required modules
 require('dotenv').config();
 const express = require('express');
-const { connectToMongoDB } = require('./server/database'); // Update the import statement
+const { connectToMongoDB } = require('./database'); // Update the import statement
 const { MongoClient, ObjectId } = require('mongodb');
 // Create an Express application
 const app = express();
