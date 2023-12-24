@@ -1,27 +1,18 @@
-// Example component in React for displaying staff members
-import React, { useState, useEffect } from 'react';
+// App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import HomePage from './HomePage';
+import StaffList from './StaffList';
 
-const StaffList = () => {
-  const [staffMembers, setStaffMembers] = useState([]);
-
-  useEffect(() => {
-    // Fetch data from your Express API
-    fetch('/api/staff')
-      .then((response) => response.json())
-      .then((data) => setStaffMembers(data))
-      .catch((error) => console.error('Error fetching staff members:', error));
-  }, []);
-
+const App = () => {
   return (
-    <div>
-      <h2>Staff Members</h2>
-      <ul>
-        {staffMembers.map((staff) => (
-          <li key={staff._id}>{`${staff.firstName} ${staff.lastName}`}</li>
-        ))}
-      </ul>
-    </div>
+    <Router>
+      <Switch>
+        <Route path="/" exact component={HomePage} />
+        <Route path="/staff" component={StaffList} />
+      </Switch>
+    </Router>
   );
 };
 
-export default StaffList;
+export default App;
