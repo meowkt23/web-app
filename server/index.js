@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
 // Add your staff routes here
-app.get('http://localhost:3000/api/staff', (req, res) => {
+app.get('/api/staff', (req, res) => {
   
   // Handle fetching staff data from MongoDB and sending it as a response
   res.send('Staff data will be sent here');
