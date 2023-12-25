@@ -2,9 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { connectToMongoDB } = require('./database');
-const { MongoClient, ObjectId } = require('mongodb');
+const { StaffModel } = require('./staff-model');  // Import StaffModel
+const fetch = require('node-fetch');
 
-const router = express.Router(); // Use express.Router() instead of express()
+const router = express.Router();
 
 const corsOptions = {
   origin: 'http://localhost:3001',
@@ -16,17 +17,35 @@ const corsOptions = {
 router.use(cors(corsOptions));
 router.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
-router.get('/staff', (req, res) => {
-  // Handle fetching staff data from MongoDB and sending it as a response
-  res.send('Staff data will be sent here');
+// Fetch and return staff data from MongoDB
+router.get('/staff', async (req, res) => {
+  try {
+    const staffMembers = await StaffModel.find({}, {
+      _id: 1,
+      staffId: 1,
+      firstName: 1,
+      lastName: 1,
+      dateOfBirth: 1,
+      mobileNumber: 1,
+      email: 1,
+      role: 1,
+      'department.name': 1,
+      'department.site': 1,
+    });
+
+    res.json(staffMembers);
+  } catch (error) {
+    console.error('Error fetching staff members:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
+
 
 const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
 
 router.get('/', async (req, res) => {
   try {
-    const fetch = await import('node-fetch');
-    const response = await fetch.default(githubUrl);
+    const response = await fetch(githubUrl);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch HTML from GitHub: ${response.statusText}`);
@@ -48,7 +67,6 @@ const PORT = process.env.PORT || 3000;
 
 connectToMongoDB()
   .then(() => {
-    // Use router instead of app
     router.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });

@@ -15,9 +15,10 @@ const StaffList = () => {
     <div>
       <h2>Staff Members</h2>
       <ul>
-        {staffMembers.map((staff) => (
-          <li key={staff._id}>{`${staff.firstName} ${staff.lastName}`}</li>
-        ))}
+        {Array.isArray(staffMembers) &&
+          staffMembers.map((staff) => (
+            <li key={staff._id}>{`${staff.firstName} ${staff.lastName}`}</li>
+          ))}
       </ul>
     </div>
   );

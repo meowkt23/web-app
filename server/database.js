@@ -3,6 +3,9 @@ require('dotenv').config();
 
 const connectionString = process.env.MONGODB_CONNECTION_STRING || 'default_connection_string';
 
+// Import staffSchema from staff-model.js
+const { staffSchema } = require('./staff-model');
+
 const connectToMongoDB = async () => {
   try {
     console.log(`Connecting to MongoDB...`);
@@ -14,4 +17,6 @@ const connectToMongoDB = async () => {
   }
 };
 
-module.exports = { connectToMongoDB, mongoose };
+const StaffModel = mongoose.model('Staff', staffSchema);
+
+module.exports = { connectToMongoDB, mongoose, StaffModel };

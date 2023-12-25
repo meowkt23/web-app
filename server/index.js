@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const { connectToMongoDB } = require('./database');
 const { MongoClient, ObjectId } = require('mongodb');
+const staffRoutes = require('./staff-routes');
 
 const app = express();
 
@@ -13,11 +14,19 @@ app.use(cors());
 // Serve static files from the client/build folder
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
+app.use('/api', staffRoutes);
 // Add your staff routes here
-app.get('/api/staff', (req, res) => {
-  
-  // Handle fetching staff data from MongoDB and sending it as a response
-  res.send('Staff data will be sent here');
+app.get('/api/staff', async (req, res) => {
+  try {
+    // Fetch staff data from MongoDB
+    const staffData = await StaffModel.find();  // Replace with your actual query
+
+    // Send the staff data as a JSON response
+    res.json(staffData);
+  } catch (error) {
+    console.error('Error fetching staff members:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Set the GitHub URL for fetching HTML content (fallback to a default URL)
