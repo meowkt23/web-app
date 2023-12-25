@@ -1,11 +1,10 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { connectToMongoDB } = require('./database');
 const { MongoClient, ObjectId } = require('mongodb');
 
-const app = express(); // Declare 'app' here
+const router = express.Router(); // Use express.Router() instead of express()
 
 const corsOptions = {
   origin: 'http://localhost:3001',
@@ -14,22 +13,17 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-app.use(cors(corsOptions));
-app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+router.use(cors(corsOptions));
+router.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
-// Use the cors middleware to enable CORS
-app.use(cors());
-
-// Add your staff routes here
-app.get('http://localhost:3000/api/staff', (req, res) => {
+router.get('/staff', (req, res) => {
   // Handle fetching staff data from MongoDB and sending it as a response
   res.send('Staff data will be sent here');
 });
 
 const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
 
-// Define a route for handling requests to the root path ('/')
-app.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const fetch = await import('node-fetch');
     const response = await fetch.default(githubUrl);
@@ -46,8 +40,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Set up a wildcard route to handle React app requests
-app.get('*', (req, res) => {
+router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
 });
 
@@ -55,10 +48,13 @@ const PORT = process.env.PORT || 3000;
 
 connectToMongoDB()
   .then(() => {
-    app.listen(PORT, () => {
+    // Use router instead of app
+    router.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);
   });
+
+module.exports = router;
