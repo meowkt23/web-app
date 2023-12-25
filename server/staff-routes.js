@@ -4,9 +4,9 @@ const cors = require('cors');
 const path = require('path');
 const { connectToMongoDB } = require('./database');
 const { MongoClient, ObjectId } = require('mongodb');
-const fetch = require('node-fetch');
 
-const app = express();
+const app = express(); // Declare 'app' here
+
 const corsOptions = {
   origin: 'http://localhost:3001',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -20,12 +20,19 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 // Use the cors middleware to enable CORS
 app.use(cors());
 
+// Add your staff routes here
+app.get('/api/staff', (req, res) => {
+  // Handle fetching staff data from MongoDB and sending it as a response
+  res.send('Staff data will be sent here');
+});
+
 const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
 
 // Define a route for handling requests to the root path ('/')
 app.get('/', async (req, res) => {
   try {
-    const response = await fetch(githubUrl);
+    const fetch = await import('node-fetch');
+    const response = await fetch.default(githubUrl);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch HTML from GitHub: ${response.statusText}`);

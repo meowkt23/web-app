@@ -5,7 +5,7 @@ const StaffList = () => {
 
   useEffect(() => {
     // Fetch data from your Express API
-    fetch('/staff')
+    fetch('http://localhost:3000/api/staff')
       .then((response) => response.json())
       .then((data) => setStaffMembers(data))
       .catch((error) => console.error('Error fetching staff members:', error));
