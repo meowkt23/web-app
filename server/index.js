@@ -8,15 +8,13 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-app.use(cors(corsOptions));
-
 const { connectToMongoDB } = require('./database');
 const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 
 // Use the cors middleware to enable CORS
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Serve static files from the client/build folder
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
