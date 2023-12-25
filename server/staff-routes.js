@@ -1,50 +1,57 @@
+require('dotenv').config();
 const express = require('express');
-const router = express.Router();
-const StaffModel = require('./staff');
+const cors = require('cors');
+const path = require('path');
+const { connectToMongoDB } = require('./database');
+const { MongoClient, ObjectId } = require('mongodb');
+const fetch = require('node-fetch');
 
-// Get all staff members
-router.get('/staff', async (req, res) => {
+const app = express();
+const corsOptions = {
+  origin: 'http://localhost:3001',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+
+// Use the cors middleware to enable CORS
+app.use(cors());
+
+const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
+
+// Define a route for handling requests to the root path ('/')
+app.get('/', async (req, res) => {
   try {
-    const staffMembers = await StaffModel.find();
-    res.json(staffMembers);
+    const response = await fetch(githubUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch HTML from GitHub: ${response.statusText}`);
+    }
+
+    const html = await response.text();
+    res.send(html);
   } catch (error) {
-    console.error('Error getting staff members:', error);
+    console.error('Error fetching or sending HTML:', error);
     res.status(500).send('Internal Server Error');
   }
 });
 
-// Add a new staff member
-router.post('/staff', async (req, res) => {
-  try {
-    const newStaffMember = new StaffModel(req.body);
-    await newStaffMember.save();
-    res.json(newStaffMember);
-  } catch (error) {
-    console.error('Error adding staff member:', error);
-    res.status(500).send('Internal Server Error');
-  }
+// Set up a wildcard route to handle React app requests
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
 });
 
-// Update a staff member
-router.put('/staff/:id', async (req, res) => {
-  try {
-    const updatedStaffMember = await StaffModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updatedStaffMember);
-  } catch (error) {
-    console.error('Error updating staff member:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+const PORT = process.env.PORT || 3000;
 
-// Delete a staff member
-router.delete('/staff/:id', async (req, res) => {
-  try {
-    await StaffModel.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Staff member deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting staff member:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-module.exports = router;
+connectToMongoDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });

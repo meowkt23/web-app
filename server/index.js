@@ -1,10 +1,28 @@
-// Import required modules
 require('dotenv').config();
 const express = require('express');
-const { connectToMongoDB } = require('./database'); // Update the import statement
+const cors = require('cors'); // Import the cors middleware
+const corsOptions = {
+  origin: 'http://localhost:3001', // Replace with the actual origin of your React app
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
+const { connectToMongoDB } = require('./database');
 const { MongoClient, ObjectId } = require('mongodb');
-// Create an Express application
+
 const app = express();
+
+// Use the cors middleware to enable CORS
+app.use(cors());
+
+// Serve static files from the client/build folder
+app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+
+const staffRoutes = require('./staff-routes');
+app.use('/api', staffRoutes);
 
 // Set the GitHub URL for fetching HTML content (fallback to a default URL)
 const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
@@ -37,13 +55,15 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Set the port for the server to listen on (use process.env.PORT or default to 3000)
+// Set up a wildcard route to handle React app requests
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB and start the Express server only after the connection is established
 connectToMongoDB()
   .then(() => {
-    // Start the Express server
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
