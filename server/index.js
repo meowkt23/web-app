@@ -33,7 +33,7 @@ connectToMongoDB()
     //route to fetch staff from MongoDB
     app.get('/staff', async (req, res) => {
       try {
-        const staffDAta = await staffModel.find();
+        const staffData = await staffModel.find();
         res.json(staffData);
       } catch (error) {
         console.error('Error fetching staff members from MongoDB', error);
