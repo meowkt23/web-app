@@ -1,21 +1,21 @@
-// staff-model.js
 const mongoose = require('mongoose');
 
 // Define the staff schema
 const staffSchema = new mongoose.Schema({
-  staffId: String,
   firstName: String,
   lastName: String,
-  dateOfBirth: String,
+  dateOfBirth: Date,
   mobileNumber: String,
   email: String,
   role: String,
   department: {
     name: String,
-    site: String,
-  },
-});
+    site: String
+  }
+},
+  {collection: 'Staff'}
+);
 
-const StaffModel = mongoose.model('Staff', staffSchema);
+const staffModel = mongoose.model('Staff', staffSchema, 'Staff');
 
-module.exports = { StaffModel, staffSchema };
+module.exports = { staffSchema, staffModel };

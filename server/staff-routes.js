@@ -1,10 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-const { connectToMongoDB } = require('./database');
-const { StaffModel } = require('./staff-model');  // Import StaffModel
-const fetch = require('node-fetch');
-
+const { staffModel } = require('./database');
 const router = express.Router();
 
 const corsOptions = {
@@ -15,20 +11,17 @@ const corsOptions = {
 };
 
 router.use(cors(corsOptions));
-router.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
-// Fetch and return staff data from MongoDB
+// Get all staff members using GET all
 router.get('/staff', async (req, res) => {
   try {
-    const staffMembers = await StaffModel.find({}, {
-      _id: 1,
-      staffId: 1,
-      firstName: 1,
-      lastName: 1,
-      dateOfBirth: 1,
-      mobileNumber: 1,
-      email: 1,
-      role: 1,
+    const staffMembers = await staffModel.find({}, {
+      'firstName': 1,
+      'lastName': 1,
+      'dateOfBirth': 1,
+      'mobileNumber': 1,
+      'email': 1,
+      'role': 1,
       'department.name': 1,
       'department.site': 1,
     });
@@ -40,39 +33,72 @@ router.get('/staff', async (req, res) => {
   }
 });
 
-
-const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
-
-router.get('/', async (req, res) => {
+// Get a specific staff member using GET specific
+router.get('/staff/:id', async (req, res) => {
   try {
-    const response = await fetch(githubUrl);
+    const staffMember = await staffModel.findById(req.params.id);
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch HTML from GitHub: ${response.statusText}`);
+    if (!staffMember) {
+      return res.status(404).json({ error: 'Staff member not found' });
     }
 
-    const html = await response.text();
-    res.send(html);
+    res.json(staffMember);
   } catch (error) {
-    console.error('Error fetching or sending HTML:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('Error fetching staff member:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-router.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
+// Create a new staff member using POST
+router.post('/staff', async (req, res) => {
+  try {
+    const staffData = req.body;
+    if (!staffData.firstName || !staffData.lastName || !staffData.dateOfBirth || !staffData.mobileNumber || !staffData.email || !staffData.role || !staffData.department) {
+      throw new Error('Invalid request body. Missing required fields.');
+    }
+    const newStaffMember = await staffModel.create(staffData);
+    res.json(newStaffMember);
+  } catch (error) {
+    console.error('Error creating staff member:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
-const PORT = process.env.PORT || 3000;
+// Update a staff member using PUT
+router.put('/staff/:id', async (req, res) => {
+  try {
+    const staffId = req.params.id;
 
-connectToMongoDB()
-  .then(() => {
-    router.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-  });
+    if (!mongoose.Types.ObjectId.isValid(staffId)) {
+      return res.status(400).json({ error: 'Invalid staff ID' });
+    }
+
+    const updatedStaffMember = await staffModel.findByIdAndUpdate(staffId, req.body, { new: true });
+
+    if (!updatedStaffMember) {
+      return res.status(404).json({ error: 'Staff member not found' });
+    }
+
+    res.json(updatedStaffMember);
+  } catch (error) {
+    console.error('Error updating staff member:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// Delete a staff member using DELETE
+router.delete('/staff/:id', async (req, res) => {
+  try {
+    const deletedStaffMember = await staffModel.findByIdAndDelete(req.params.id);
+
+    if (!deletedStaffMember) {
+      return res.status(404).json({ error: 'Staff member not found' });
+    }
+
+    res.json({ message: 'Staff member deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting staff member:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;

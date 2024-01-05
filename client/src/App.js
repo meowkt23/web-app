@@ -7,7 +7,7 @@ import StaffList from './StaffList';
 const App = () => {
   return (
     <Router>
-      <Routes> {/* Wrap your routes with the Routes component */}
+      <Routes> {}
         <Route path="/" element={<HomePage />} />
         <Route path="/staff" element={<StaffList />} />
       </Routes>
