@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const StaffList = () => {
+  //state for storing list of staff members
   const [staffMembers, setStaffMembers] = useState([]);
+  //state for tracking whether user is editing
   const [isEditing, setIsEditing] = useState(false);
+  //state for storing staff data being edited
   const [editData, setEditData] = useState({
     firstName: '',
     lastName: '',
@@ -16,6 +19,7 @@ const StaffList = () => {
     },
   });
 
+  //fetch staff members from server
   const fetchStaffMembers = async () => {
     try {
       const response = await fetch('http://localhost:3000/staff');
@@ -35,11 +39,13 @@ const StaffList = () => {
     fetchStaffMembers();
   }, []);
 
+  //function to handle editing of staff member
   const handleEdit = (staff) => {
     setIsEditing(true);
     setEditData({ ...staff });
   };
 
+  //function to handle deletion of staff member
   const handleDelete = async (_id) => {
     try {
       const response = await fetch(`http://localhost:3000/staff/${_id}`, {
@@ -50,17 +56,17 @@ const StaffList = () => {
         throw new Error(`Failed to delete staff member: ${response.statusText}`);
       }
 
-      // Optional: Handle the response (e.g., show a success message)
       const result = await response.json();
       console.log(result);
 
-      // Refresh the staff list after deleting
+      // refresh staff list after deletion
       fetchStaffMembers();
     } catch (error) {
       console.error('Error deleting staff member:', error);
     }
   };
 
+  //function to save edited or new staff member
   const saveStaffMemberToServer = async () => {
     const apiUrl = editData._id ? `http://localhost:3000/staff/${editData._id}` : 'http://localhost:3000/staff';
   
@@ -77,10 +83,10 @@ const StaffList = () => {
         throw new Error(`Failed to save staff member: ${response.statusText}`);
       }
   
-      // Reset editData after successfully saving
+      //reset edit data after saving
       setEditData(null);
   
-      // Fetch updated staff members
+      //fetch updated staff members
       fetchStaffMembers();
     } catch (error) {
       console.error('Error saving staff member:', error);
@@ -139,6 +145,7 @@ const StaffList = () => {
   );
 };
 
+//edit form component for editing or adding new staff member
 const EditForm = ({ editData, setEditData, setIsEditing, saveStaffMemberToServer }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;

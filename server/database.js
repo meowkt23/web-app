@@ -23,8 +23,5 @@ const connectToMongoDB = async () => {
   }
 };
 
-//delete - const staffModel = mongoose.model('Staff', staffSchema);
-//delete - module.exports = { connectToMongoDB, mongoose, staffModel };
-
 //export connectToMongoDB function and mongoose instance
 module.exports = { connectToMongoDB, mongoose}

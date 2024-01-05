@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Define the staff schema
+//define staff schema
 const staffSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
@@ -13,9 +13,12 @@ const staffSchema = new mongoose.Schema({
     site: String
   }
 },
-  {collection: 'Staff'}
+  {collection: 'Staff'} //specify that the collection name is Staff
 );
 
+//create the staff model from the schema, specifying the collection name is Staff
+//this deals with MongoDB's automatic pluralisation of the model name
 const staffModel = mongoose.model('Staff', staffSchema, 'Staff');
 
+//export schema and model
 module.exports = { staffSchema, staffModel };

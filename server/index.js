@@ -1,4 +1,4 @@
-//server.js sets up the Express server and defines routes
+//index.js sets up the Express server including middleware and route mounting
 
 //merge environment setup
 require('dotenv').config();
@@ -29,7 +29,6 @@ connectToMongoDB()
   .then(() => {
     //check - mount staff routes under the "/staff" path
     app.use('/staff', staffRoutes);
-    //delete - app.use('/api', staffRoutes)
 
     //route to fetch staff from MongoDB
     app.get('/staff', async (req, res) => {
