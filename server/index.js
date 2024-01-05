@@ -1,63 +1,70 @@
+//server.js sets up the Express server and defines routes
+
+//merge environment setup
 require('dotenv').config();
+
+//import Express.js framework and connectToMongoDB from database.js
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { connectToMongoDB } = require('./database');
 const staffRoutes = require('./staff-routes');
+const { staffModel } = require('./staff-model');
 
+//create Express instance and set up server to listen on port 3000
 const app = express();
 
+//enabble CORS middleware for all routes
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
+//middleware to parse JSON requests
+app.use(express.json());
 
-app.use('', staffRoutes);
-app.get('staff', async (req, res) => {
-  try {
-    const staffData = await staffModel.find();
-    res.json(staffData);
-  } catch (error) {
-    console.error('Error fetching staff members:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+//serve static files
+app.use(express.static(path.join(__dirname, '..', 'client', 'public', 'src')));
 
-const githubUrl = process.env.GITHUB_URL || 'https://raw.githubusercontent.com/meowkt23/web-app/main/public/index.html';
+//using the connectToMongoDB function to connect to MongoDB
+connectToMongoDB()
+  .then(() => {
+    //check - mount staff routes under the "/staff" path
+    app.use('/staff', staffRoutes);
+    //delete - app.use('/api', staffRoutes)
 
-app.get('/', async (req, res) => {
-  try {
-    const fetch = await require('node-fetch');
-    const response = await fetch.default(githubUrl);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch HTML from GitHub: ${response.statusText}`);
-    }
-
-    const html = await response.text();
-    res.send(html);
-  } catch (error) {
-    console.error('Error fetching or sending HTML:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'client', 'public', 'index.html'));
-});
-
-const PORT = process.env.PORT || 3000;
-
-async function startServer() {
-  try {
-    await connectToMongoDB();
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+    //route to fetch staff from MongoDB
+    app.get('/staff', async (req, res) => {
+      try {
+        const staffDAta = await staffModel.find();
+        res.json(staffData);
+      } catch (error) {
+        console.error('Error fetching staff members from MongoDB', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
     });
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-  }
-}
+    
+    //route to fetch HTML file index.html
+    const indexHtmlFilePath = path.join(__dirname, '..', 'client', 'public', 'src', 'index.html');
 
-startServer();
+    app.get('/', async (req, res) => {
+      try {
+        //read HTML file
+        const indexHtml = await fs.promises.readFile(indexHtmlFilePath, 'utf-8');
+        res.send(indexHtml);
+      } catch (error) {
+        console.error('Error reading or sending index.html file', error);
+        res.status(500), send('Internal Server Error');
+      }
+    });
 
+    //start server
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`); //console log
+    });
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error); //error log
+  });
+
+//export to Express app
 module.exports = app;
