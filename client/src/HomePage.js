@@ -9,6 +9,16 @@ const HomePage = () => {
       <Link to="/Staff">Staff Page</Link>
       <br />
       <Link to="/Patients">Patients Page</Link>
+      <br />
+      <Link to="/Pharmacy">Pharmacy Page</Link>
+      <br />
+      <Link to="/Inventory">Inventory Page</Link>
+      <br />
+      <Link to="/Insurance">Insurance Page</Link>
+      <br />
+      <Link to="/Billing">Billing Page</Link>
+      <br />
+      <Link to="/Appointments">Appointments Page</Link>
     </div>
   );
 };

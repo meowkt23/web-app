@@ -9,10 +9,24 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { connectToMongoDB } = require('./database');
+
+//import routes
 const staffRoutes = require('./staffRoutes');
-const { staffModel } = require('./staffModel');
 const patientsRoutes = require('./patientsRoutes');
+const pharmacyRoutes = require('./pharmacyRoutes');
+const inventoryRoutes = require('./inventoryRoutes');
+const insuranceRoutes = require('./insuranceRoutes');
+const billingRoutes = require('./billingRoutes');
+const appointmentsRoutes = require('./appointmentsRoutes');
+
+//import models
+const { staffModel } = require('./staffModel');
 const { patientsModel } = require('./patientsModel');
+const { pharmacyModel } = require('./pharmacyModel');
+const { inventoryModel } = require('./inventoryModel');
+const { insuranceModel } = require('./insuranceModel');
+const { billingModel } = require('./billingModel');
+const { appointmentsModel } = require('./appointmentsModel');
 
 //create Express instance and set up server to listen on port 3000
 const app = express();
