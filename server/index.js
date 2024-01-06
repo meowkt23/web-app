@@ -43,11 +43,16 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'public', 'src')));
 //using the connectToMongoDB function to connect to MongoDB
 connectToMongoDB()
   .then(() => {
-    //check - mount staff routes under the "/staff" path
+    //mount routes
     app.use('/staff', staffRoutes);
     app.use('/patients', patientsRoutes);
+    app.use('/pharmacy', pharmacyRoutes);
+    app.use('/insurance', insuranceRoutes);
+    app.use('/inventory', inventoryRoutes);
+    app.use('/billing', billingRoutes);
+    app.use('/appointments', appointmentsRoutes);
 
-    //route to fetch staff from MongoDB
+    //fetch data from MongoDB
     app.get('/staff', async (req, res) => {
       try {
         const staffData = await staffModel.find();
@@ -57,13 +62,63 @@ connectToMongoDB()
         res.status(500).json({ error: 'Internal server error' });
       }
     });
-    
+
     app.get('/patients', async (req, res) => {
       try {
         const patientsData = await patientsModel.find();
         res.json(patientsData);
       } catch (error) {
         console.error('Error fetching patients from MongoDB', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+    
+    app.get('/pharmacy', async (req, res) => {
+      try {
+        const pharmacyData = await pharmacyModel.find();
+        res.json(pharmacyData);
+      } catch (error) {
+        console.error('Error fetching medication from MongoDB', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    app.get('/inventory', async (req, res) => {
+      try {
+        const inventoryData = await inventoryModel.find();
+        res.json(inventoryData);
+      } catch (error) {
+        console.error('Error fetching inventory from MongoDB', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    app.get('/insurance', async (req, res) => {
+      try {
+        const insuranceData = await insuranceModel.find();
+        res.json(insuranceData);
+      } catch (error) {
+        console.error('Error fetching insurance from MongoDB', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    app.get('/billing', async (req, res) => {
+      try {
+        const billingData = await billingModel.find();
+        res.json(billingData);
+      } catch (error) {
+        console.error('Error fetching billing from MongoDB', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    app.get('/appointments', async (req, res) => {
+      try {
+        const appointmentsData = await appointmentsModel.find();
+        res.json(appointmentsData);
+      } catch (error) {
+        console.error('Error fetching appointments from MongoDB', error);
         res.status(500).json({ error: 'Internal server error' });
       }
     });
@@ -78,7 +133,7 @@ connectToMongoDB()
         res.send(indexHtml);
       } catch (error) {
         console.error('Error reading or sending index.html file', error);
-        res.status(500), send('Internal Server Error');
+        res.status(500).send('Internal Server Error');
       }
     });
 
