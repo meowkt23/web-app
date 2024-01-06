@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Pie } from 'react-chartjs-2';
+import 'chart.js';
 
 const BillingList = () => {
   // state for storing list of Billing entries

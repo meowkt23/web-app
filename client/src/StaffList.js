@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { Pie } from 'react-chartjs-2';
+import 'chart.js';
 
 const StaffList = () => {
   //state for storing list of Staff members
   const [StaffMembers, setStaffMembers] = useState([]);
+  //state for total staff members
+  const [totalStaff, setTotalStaff] = useState(0);
+  //state for staff distribution by department
+  const [departmentDistribution, setDepartmentDistribution] = useState({});
   //state for tracking whether user is editing
   const [isEditing, setIsEditing] = useState(false);
   //state for storing Staff data being edited
@@ -30,6 +36,15 @@ const StaffList = () => {
 
       const data = await response.json();
       setStaffMembers(data);
+      //calculation for total staff members
+      setTotalStaff(data.length);
+      //calculation for staff distribution across departments
+      const distribution = data.reduce((acc, staff) => {
+        const departmentName = staff.department.name;
+        acc[departmentName] = (acc[departmentName] || 0) + 1;
+        return acc;
+      }, {});
+      setDepartmentDistribution(distribution);
     } catch (error) {
       console.error('Error fetching Staff members:', error);
     }
@@ -96,6 +111,11 @@ const StaffList = () => {
   return (
     <div>
       <h2>Staff Members</h2>
+      <div>
+        <h3>Total Staff Members: {totalStaff}</h3>
+        <h3>Staff Distribution by Department</h3>
+        <Pie data={{ labels: Object.keys(departmentDistribution), datasets: [{ data: Object.values(departmentDistribution) }] }} />
+      </div>
       <table>
         <thead>
           <tr>

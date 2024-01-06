@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Pie } from 'react-chartjs-2';
+import 'chart.js';
 
 const InventoryList = () => {
   // state for storing list of Inventory items
