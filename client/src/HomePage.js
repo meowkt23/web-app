@@ -6,7 +6,8 @@ const HomePage = () => {
     <div>
       <h1>Welcome to Healthway Hospitals Web App</h1>
       <p></p>
-      <Link to="/staff">Staff Page</Link>
+      <Link to="/Staff">Staff Page</Link>
+      <Link to="/Patients">Patients Page</Link>
     </div>
   );
 };

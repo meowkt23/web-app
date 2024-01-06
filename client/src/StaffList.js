@@ -22,7 +22,7 @@ const StaffList = () => {
   //fetch staff members from server
   const fetchStaffMembers = async () => {
     try {
-      const response = await fetch('http://localhost:3000/staff');
+      const response = await fetch('http://localhost:3000/Staff');
 
       if (!response.ok) {
         throw new Error(`Failed to fetch staff members: ${response.statusText}`);

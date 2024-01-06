@@ -2,6 +2,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const { staffModel } = require('./database');
 const router = express.Router();
 
