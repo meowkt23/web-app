@@ -114,7 +114,21 @@ const StaffList = () => {
       <div>
         <h3>Total Staff Members: {totalStaff}</h3>
         <h3>Staff Distribution by Department</h3>
-        <Pie data={{ labels: Object.keys(departmentDistribution), datasets: [{ data: Object.values(departmentDistribution) }] }} />
+        {Object.keys(departmentDistribution).length > 0 && (
+          <Pie
+            data={{
+              labels: Object.keys(departmentDistribution),
+              datasets: [
+                {
+                  data: Object.values(departmentDistribution),
+                  backgroundColor: [
+                    'red', 'blue', 'green', 'purple', 'yellow'
+                  ],
+                },
+              ],
+            }}
+          />
+        )}
       </div>
       <table>
         <thead>

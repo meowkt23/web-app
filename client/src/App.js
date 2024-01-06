@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './HomePage';
 import StaffList from './StaffList';
-import PatientsList from './PatientsList';
+import PatientsList from './PatientsList.js';
 import PharmacyList from './PharmacyList.js';
 import InventoryList from './InventoryList.js';
 import InsuranceList from './InsuranceList';
