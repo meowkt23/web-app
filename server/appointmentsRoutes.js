@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { appointmentModel } = require('./database');
+const { appointmentsModel } = require('./database');
 const router = express.Router();
 
 // set up CORS config for the router
@@ -19,7 +19,7 @@ router.use(cors(corsOptions));
 router.get('/appointments', async (req, res) => {
   try {
     // fetch all appointments with specific fields
-    const appointments = await appointmentModel.find(
+    const appointments = await appointmentsModel.find(
       {},
       {
         date: 1,
@@ -38,42 +38,42 @@ router.get('/appointments', async (req, res) => {
   }
 });
 
-// route to GET specific appointment by ID
+// route to GET specific appointments by ID
 router.get('/appointments/:id', async (req, res) => {
   try {
-    // fetch specific appointment by ID
-    const appointment = await appointmentModel.findById(req.params.id);
+    // fetch specific appointments by ID
+    const appointments = await appointmentsModel.findById(req.params.id);
 
-    // check appointment exists
-    if (!appointment) {
+    // check appointments exists
+    if (!appointments) {
       return res.status(404).json({ error: 'Appointment not found using GET by ID' });
     }
 
-    res.json(appointment);
+    res.json(appointments);
   } catch (error) {
-    console.error('Error fetching appointment using GET by ID:', error);
+    console.error('Error fetching appointments using GET by ID:', error);
     res.status(500).json({ error: 'Internal Server Error for GET by ID' });
   }
 });
 
-// route to POST create new appointment
+// route to POST create new appointments
 router.post('/appointments', async (req, res) => {
   try {
-    // validate and create new appointment
-    const appointmentData = req.body;
+    // validate and create new appointments
+    const appointmentsData = req.body;
     if (
-      !appointmentData.date ||
-      !appointmentData.time ||
-      !appointmentData.patientId ||
-      !appointmentData.staffId ||
-      !appointmentData.type
+      !appointmentsData.date ||
+      !appointmentsData.time ||
+      !appointmentsData.patientId ||
+      !appointmentsData.staffId ||
+      !appointmentsData.type
     ) {
       throw new Error('Invalid request body. Missing required fields using POST for new appointment.');
     }
-    const newAppointment = await appointmentModel.create(appointmentData);
+    const newAppointment = await appointmentsModel.create(appointmenstData);
     res.json(newAppointment);
   } catch (error) {
-    console.error('Error creating appointment using POST new appointment:', error);
+    console.error('Error creating appointments using POST new appointment:', error);
     res.status(500).json({ error: 'Internal Server Error for POST new appointment' });
   }
 });
@@ -87,7 +87,7 @@ router.put('/appointments/:id', async (req, res) => {
       return res.status(400).json({ error: 'Invalid appointment ID using PUT update appointment' });
     }
 
-    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+    const updatedAppointment = await appointmentsModel.findByIdAndUpdate(
       appointmentId,
       req.body,
       { new: true }
@@ -109,7 +109,7 @@ router.put('/appointments/:id', async (req, res) => {
 router.delete('/appointments/:id', async (req, res) => {
   try {
     // delete appointment by ID
-    const deletedAppointment = await appointmentModel.findByIdAndDelete(req.params.id);
+    const deletedAppointment = await appointmentsModel.findByIdAndDelete(req.params.id);
 
     // check appointment exists
     if (!deletedAppointment) {

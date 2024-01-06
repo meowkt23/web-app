@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-// define appointment schema
-const appointmentSchema = new mongoose.Schema({
+// define appointments schema
+const appointmentsSchema = new mongoose.Schema({
   date: String,
   time: String,
   patientId: String,
@@ -11,8 +11,8 @@ const appointmentSchema = new mongoose.Schema({
   { collection: 'Appointments' } // specify that the collection name is Appointments
 );
 
-// create the appointment model from the schema, specifying the collection name is Appointments
-const appointmentModel = mongoose.model('Appointments', appointmentSchema, 'Appointments');
+// create the appointments model from the schema, specifying the collection name is Appointments
+const appointmentsModel = mongoose.model('Appointments', appointmentsSchema, 'Appointments');
 
 // export schema and model
-module.exports = { appointmentSchema, appointmentModel };
+module.exports = { appointmentsSchema, appointmentsModel };
