@@ -7,8 +7,8 @@ require('dotenv').config();
 //fetch MongoDB connection string from .env file
 const connectionString = process.env.MONGODB_CONNECTION_STRING;
 
-//import staffSchema from staff-model.js
-const { staffSchema } = require('./staff-model');
+//import staffSchema from staffModel.js
+const { staffSchema } = require('./staffModel');
 
 //define asychnronous function to connect to MongoDB
 const connectToMongoDB = async () => {

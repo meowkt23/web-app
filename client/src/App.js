@@ -1,17 +1,17 @@
 // App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Update the import statement
-import HomePage from './homePage';
-import staffList from './staffList';
-import patientsList from './patientsList';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './HomePage';
+import StaffList from './StaffList';
+import PatientsList from './PatientsList';
 
 const App = () => {
   return (
     <Router>
       <Routes> {}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/Staff" element={<staffList />} />
-        <Route path="/Patients" element={<patientsList />} />
+        <Route path="/" element={<HomePage/>} />
+        <Route path="/Staff" element={<StaffList/>} />
+        <Route path="/Patients" element={<PatientsList/>} />
       </Routes>
     </Router>
   );

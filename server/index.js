@@ -9,8 +9,10 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { connectToMongoDB } = require('./database');
-const staffRoutes = require('./staff-routes');
-const { staffModel } = require('./staff-model');
+const staffRoutes = require('./staffRoutes');
+const { staffModel } = require('./staffModel');
+const patientsRoutes = require('./patientsRoutes');
+const { patientsModel } = require('./patientsModel');
 
 //create Express instance and set up server to listen on port 3000
 const app = express();
@@ -29,6 +31,7 @@ connectToMongoDB()
   .then(() => {
     //check - mount staff routes under the "/staff" path
     app.use('/staff', staffRoutes);
+    app.use('/patients', patientsRoutes);
 
     //route to fetch staff from MongoDB
     app.get('/staff', async (req, res) => {
@@ -37,6 +40,16 @@ connectToMongoDB()
         res.json(staffData);
       } catch (error) {
         console.error('Error fetching staff members from MongoDB', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+    
+    app.get('/patients', async (req, res) => {
+      try {
+        const patientsData = await patientsModel.find();
+        res.json(patientsData);
+      } catch (error) {
+        console.error('Error fetching patients from MongoDB', error);
         res.status(500).json({ error: 'Internal server error' });
       }
     });

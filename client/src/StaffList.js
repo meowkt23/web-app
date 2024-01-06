@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const StaffList = () => {
-  //state for storing list of staff members
-  const [staffMembers, setStaffMembers] = useState([]);
+  //state for storing list of Staff members
+  const [StaffMembers, setStaffMembers] = useState([]);
   //state for tracking whether user is editing
   const [isEditing, setIsEditing] = useState(false);
-  //state for storing staff data being edited
+  //state for storing Staff data being edited
   const [editData, setEditData] = useState({
     firstName: '',
     lastName: '',
@@ -19,19 +19,19 @@ const StaffList = () => {
     },
   });
 
-  //fetch staff members from server
+  //fetch Staff members from server
   const fetchStaffMembers = async () => {
     try {
       const response = await fetch('http://localhost:3000/Staff');
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch staff members: ${response.statusText}`);
+        throw new Error(`Failed to fetch Staff members: ${response.statusText}`);
       }
 
       const data = await response.json();
       setStaffMembers(data);
     } catch (error) {
-      console.error('Error fetching staff members:', error);
+      console.error('Error fetching Staff members:', error);
     }
   };
 
@@ -39,36 +39,36 @@ const StaffList = () => {
     fetchStaffMembers();
   }, []);
 
-  //function to handle editing of staff member
-  const handleEdit = (staff) => {
+  //function to handle editing of Staff member
+  const handleEdit = (Staff) => {
     setIsEditing(true);
-    setEditData({ ...staff });
+    setEditData({ ...Staff });
   };
 
-  //function to handle deletion of staff member
+  //function to handle deletion of Staff member
   const handleDelete = async (_id) => {
     try {
-      const response = await fetch(`http://localhost:3000/staff/${_id}`, {
+      const response = await fetch(`http://localhost:3000/Staff/${_id}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to delete staff member: ${response.statusText}`);
+        throw new Error(`Failed to delete Staff member: ${response.statusText}`);
       }
 
       const result = await response.json();
       console.log(result);
 
-      // refresh staff list after deletion
+      // refresh Staff list after deletion
       fetchStaffMembers();
     } catch (error) {
-      console.error('Error deleting staff member:', error);
+      console.error('Error deleting Staff member:', error);
     }
   };
 
-  //function to save edited or new staff member
+  //function to save edited or new Staff member
   const saveStaffMemberToServer = async () => {
-    const apiUrl = editData._id ? `http://localhost:3000/staff/${editData._id}` : 'http://localhost:3000/staff';
+    const apiUrl = editData._id ? `http://localhost:3000/Staff/${editData._id}` : 'http://localhost:3000/Staff';
   
     try {
       const response = await fetch(apiUrl, {
@@ -80,16 +80,16 @@ const StaffList = () => {
       });
   
       if (!response.ok) {
-        throw new Error(`Failed to save staff member: ${response.statusText}`);
+        throw new Error(`Failed to save Staff member: ${response.statusText}`);
       }
   
       //reset edit data after saving
       setEditData(null);
   
-      //fetch updated staff members
+      //fetch updated Staff members
       fetchStaffMembers();
     } catch (error) {
-      console.error('Error saving staff member:', error);
+      console.error('Error saving Staff member:', error);
     }
   };
 
@@ -111,20 +111,20 @@ const StaffList = () => {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(staffMembers) &&
-            staffMembers.map((staff) => (
-              <tr key={staff._id}>
-                <td>{staff.firstName}</td>
-                <td>{staff.lastName}</td>
-                <td>{staff.dateOfBirth}</td>
-                <td>{staff.mobileNumber}</td>
-                <td>{staff.email}</td>
-                <td>{staff.role}</td>
-                <td>{staff.department.name}</td>
-                <td>{staff.department.site}</td>
+          {Array.isArray(StaffMembers) &&
+            StaffMembers.map((Staff) => (
+              <tr key={Staff._id}>
+                <td>{Staff.firstName}</td>
+                <td>{Staff.lastName}</td>
+                <td>{Staff.dateOfBirth}</td>
+                <td>{Staff.mobileNumber}</td>
+                <td>{Staff.email}</td>
+                <td>{Staff.role}</td>
+                <td>{Staff.department.name}</td>
+                <td>{Staff.department.site}</td>
                 <td>
-                  <button onClick={() => handleEdit(staff)}>Edit</button>
-                  <button onClick={() => handleDelete(staff._id)}>Delete</button>
+                  <button onClick={() => handleEdit(Staff)}>Edit</button>
+                  <button onClick={() => handleDelete(Staff._id)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -145,7 +145,7 @@ const StaffList = () => {
   );
 };
 
-//edit form component for editing or adding new staff member
+//edit form component for editing or adding new Staff member
 const EditForm = ({ editData, setEditData, setIsEditing, saveStaffMemberToServer }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;

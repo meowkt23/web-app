@@ -1,4 +1,4 @@
-//staff-routes.js defines routes for handling staff
+//staffRoutes.js defines routes for handling staff
 
 const express = require('express');
 const cors = require('cors');

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const PatientsList = () => {
-  //state for storing list of patients
-  const [patients, setPatients] = useState([]);
+  //state for storing list of Patients
+  const [Patients, setPatients] = useState([]);
   //state for tracking whether user is editing
   const [isEditing, setIsEditing] = useState(false);
   //state for storing patient data being edited
@@ -16,19 +16,19 @@ const PatientsList = () => {
     notes: ''
   });
 
-  //fetch patients from server
+  //fetch Patients from server
   const fetchPatients = async () => {
     try {
       const response = await fetch('http://localhost:3000/Patients');
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch patients: ${response.statusText}`);
+        throw new Error(`Failed to fetch Patients: ${response.statusText}`);
       }
 
       const data = await response.json();
       setPatients(data);
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error('Error fetching Patients:', error);
     }
   };
 
@@ -37,15 +37,15 @@ const PatientsList = () => {
   }, []);
 
   //function to handle editing of patient
-  const handleEdit = (patient) => {
+  const handleEdit = (Patients) => {
     setIsEditing(true);
-    setEditData({ ...patient });
+    setEditData({ ...Patients });
   };
 
   //function to handle deletion of patient
   const handleDelete = async (_id) => {
     try {
-      const response = await fetch(`http://localhost:3000/Patient/${_id}`, {
+      const response = await fetch(`http://localhost:3000/Patients/${_id}`, {
         method: 'DELETE',
       });
 
@@ -65,7 +65,7 @@ const PatientsList = () => {
 
   //function to save edited or new patient
   const savePatientToServer = async () => {
-    const apiUrl = editData._id ? `http://localhost:3000/Patient/${editData._id}` : 'http://localhost:3000/Patient';
+    const apiUrl = editData._id ? `http://localhost:3000/Patients/${editData._id}` : 'http://localhost:3000/Patients';
   
     try {
       const response = await fetch(apiUrl, {
@@ -83,7 +83,7 @@ const PatientsList = () => {
       //reset edit data after saving
       setEditData(null);
   
-      //fetch updated patients
+      //fetch updated Patients
       fetchPatients();
     } catch (error) {
       console.error('Error saving patient:', error);
@@ -106,20 +106,19 @@ const PatientsList = () => {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(patients) &&
-            patients.map((Patients) => (
-              <tr key={patient._id}>
-                <td>{patient.firstName}</td>
-                <td>{patient.lastName}</td>
-                <td>{patient.dateOfBirth}</td>
-                <td>{patient.mobileNumber}</td>
-                <td>{patient.email}</td>
-                <td>{patient.role}</td>
-                <td>{patient.department.name}</td>
-                <td>{patient.department.site}</td>
+          {Array.isArray(Patients) &&
+            Patients.map((Patients) => (
+              <tr key={Patients._id}>
+                <td>{Patients.firstName}</td>
+                <td>{Patients.lastName}</td>
+                <td>{Patients.dateOfBirth}</td>
+                <td>{Patients.mobileNumber}</td>
+                <td>{Patients.email}</td>
+                <td>{Patients.alerts.join(', ')}</td>
+                <td>{Patients.notes}</td>
                 <td>
                   <button onClick={() => handleEdit(Patients)}>Edit</button>
-                  <button onClick={() => handleDelete(Patients_id)}>Delete</button>
+                  <button onClick={() => handleDelete(Patients._id)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -176,11 +175,11 @@ const EditForm = ({ editData, setEditData, setIsEditing, savePatientToServer }) 
         </label>
         <label>
           Notes:
-          <input type="text" name="notes" value={editData.role} onChange={handleInputChange} />
+          <input type="text" name="notes" value={editData.notes} onChange={handleInputChange} />
         </label>
         <label>
           Alerts:
-          <input type="text" name="alerts" value={editData.department.name} onChange={handleInputChange} />
+          <input type="text" name="alerts" value={editData.alerts} onChange={handleInputChange} />
         </label>
         <button type="button" onClick={savePatientToServer}>
           Save
