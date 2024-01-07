@@ -7,11 +7,10 @@ const HomePage = () => {
   const [authenticated, setAuthenticated] = useState(false);
 
   const handleLogin = () => {
-    // Hardcoded username and password
+
     const hardcodedUsername = 'user';
     const hardcodedPassword = 'pass';
 
-    // Check if entered credentials match the hardcoded ones
     if (username === hardcodedUsername && password === hardcodedPassword) {
       setAuthenticated(true);
     } else {
