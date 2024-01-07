@@ -1,9 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Chart, ArcElement } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import 'chart.js';
+
+Chart.register(ArcElement);
 
 const StaffList = () => {
-  const [StaffMembers, setStaffMembers] = useState([]);
+  const resetEditData = () => {
+    setEditData(initialEditData);
+  };
+
+  const initialEditData = {
+    firstName: '',
+    lastName: '',
+    dateOfBirth: '',
+    mobileNumber: '',
+    email: '',
+    role: '',
+    department: {
+      name: '',
+      site: '',
+    },
+  };
+  const [editData, setEditData] = useState(initialEditData);
+  const [staffMembers, setStaffMembers] = useState([]);
   const [totalStaff, setTotalStaff] = useState(0);
   const [departmentDistribution, setDepartmentDistribution] = useState({});
   const [chartData, setChartData] = useState({
@@ -18,22 +37,34 @@ const StaffList = () => {
     ],
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    mobileNumber: '',
-    email: '',
-    role: '',
-    department: {
-      name: '',
-      site: '',
-    },
-  });
+  
+  const updateChartData = useCallback((distribution) => {
+    setChartData((prevData) => ({
+      labels: Object.keys(distribution),
+      datasets: [
+        {
+          data: Object.values(distribution),
+          backgroundColor: ['red', 'blue', 'green', 'purple', 'yellow', 'orange'],
+        },
+      ],
+    }));
+  }, [setChartData]);
+  
+  const clearChartData = useCallback(() => {
+    setChartData((prevData) => ({
+      labels: Object.keys(departmentDistribution),
+      datasets: [
+        {
+          data: Object.values(departmentDistribution),
+          backgroundColor: [],
+        },
+      ],
+    }));
+  }, [departmentDistribution]);
 
-  //fetch Staff members from server
-  const fetchStaffMembers = async () => {
+  const fetchStaffMembers = useCallback(async () => {
     try {
+      clearChartData();
       const response = await fetch('http://localhost:3000/Staff');
 
       if (!response.ok) {
@@ -41,45 +72,45 @@ const StaffList = () => {
       }
 
       const data = await response.json();
-      //update total staff
       setStaffMembers(data);
-      //calculation for total staff members
       setTotalStaff(data.length);
-      //calculation for staff distribution across departments
+
       const distribution = data.reduce((acc, staff) => {
         const departmentName = staff.department.name;
         acc[departmentName] = (acc[departmentName] || 0) + 1;
         return acc;
       }, {});
+
       setDepartmentDistribution(distribution);
-      //update chart data
-      setChartData({
-        labels: Object.keys(distribution),
-        datasets: [
-          {
-            data: Object.values(distribution),
-            backgroundColor: [
-              'red', 'blue', 'green', 'purple', 'yellow', 'orange'
-            ],
-          },
-        ],
-      });
+      updateChartData(distribution);
     } catch (error) {
       console.error('Error fetching Staff members:', error);
     }
-  };
+  }, [clearChartData], updateChartData);
 
   useEffect(() => {
-    fetchStaffMembers();
-  }, []);
+    const fetchData = async () => {
+      await fetchStaffMembers();
+    };
 
-  //function to handle editing of Staff member
-  const handleEdit = (Staff) => {
+    fetchData();
+
+    let currentChartRef = chartRef.current;
+
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+      }
+    };
+  }, [fetchStaffMembers]);
+
+  const chartRef = useRef(null);
+
+  const handleEdit = (staff) => {
     setIsEditing(true);
-    setEditData({ ...Staff });
+    setEditData({ ...staff });
   };
 
-  //function to handle deletion of Staff member
   const handleDelete = async (_id) => {
     try {
       const response = await fetch(`http://localhost:3000/Staff/${_id}`, {
@@ -93,17 +124,15 @@ const StaffList = () => {
       const result = await response.json();
       console.log(result);
 
-      // refresh Staff list after deletion
       fetchStaffMembers();
     } catch (error) {
       console.error('Error deleting Staff member:', error);
     }
   };
 
-  //function to save edited or new Staff member
   const saveStaffMemberToServer = async () => {
     const apiUrl = editData._id ? `http://localhost:3000/Staff/${editData._id}` : 'http://localhost:3000/Staff';
-  
+
     try {
       const response = await fetch(apiUrl, {
         method: editData._id ? 'PUT' : 'POST',
@@ -112,15 +141,12 @@ const StaffList = () => {
         },
         body: JSON.stringify(editData),
       });
-  
+
       if (!response.ok) {
         throw new Error(`Failed to save Staff member: ${response.statusText}`);
       }
-  
-      //reset edit data after saving
-      setEditData(null);
-  
-      //fetch updated Staff members
+
+      resetEditData();
       fetchStaffMembers();
     } catch (error) {
       console.error('Error saving Staff member:', error);
@@ -134,7 +160,15 @@ const StaffList = () => {
         <h3>Total Staff Members: {totalStaff}</h3>
         <h3>Staff Distribution by Department</h3>
         {Object.keys(departmentDistribution).length > 0 && (
-          <Pie data={chartData} />
+          <Pie
+            data={chartData}
+            options={{
+              legend: {
+                display: true,
+                position: 'right',
+              },
+            }}
+          />
         )}
       </div>
       <table>
@@ -152,20 +186,20 @@ const StaffList = () => {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(StaffMembers) &&
-            StaffMembers.map((Staff) => (
-              <tr key={Staff._id}>
-                <td>{Staff.firstName}</td>
-                <td>{Staff.lastName}</td>
-                <td>{Staff.dateOfBirth}</td>
-                <td>{Staff.mobileNumber}</td>
-                <td>{Staff.email}</td>
-                <td>{Staff.role}</td>
-                <td>{Staff.department.name}</td>
-                <td>{Staff.department.site}</td>
+          {Array.isArray(staffMembers) &&
+            staffMembers.map((staff) => (
+              <tr key={staff._id}>
+                <td>{staff.firstName}</td>
+                <td>{staff.lastName}</td>
+                <td>{staff.dateOfBirth}</td>
+                <td>{staff.mobileNumber}</td>
+                <td>{staff.email}</td>
+                <td>{staff.role}</td>
+                <td>{staff.department.name}</td>
+                <td>{staff.department.site}</td>
                 <td>
-                  <button onClick={() => handleEdit(Staff)}>Edit</button>
-                  <button onClick={() => handleDelete(Staff._id)}>Delete</button>
+                  <button onClick={() => handleEdit(staff)}>Edit</button>
+                  <button onClick={() => handleDelete(staff._id)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -186,7 +220,6 @@ const StaffList = () => {
   );
 };
 
-//edit form component for editing or adding new Staff member
 const EditForm = ({ editData, setEditData, setIsEditing, saveStaffMemberToServer }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -242,6 +275,5 @@ const EditForm = ({ editData, setEditData, setIsEditing, saveStaffMemberToServer
     </div>
   );
 };
-
 
 export default StaffList;

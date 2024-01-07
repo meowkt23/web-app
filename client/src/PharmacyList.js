@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import 'react-chartjs-2';
-import 'chart.js';
 
 const PharmacyList = () => {
   //state for storing list of Medications
