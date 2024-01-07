@@ -3,15 +3,21 @@ import { Pie } from 'react-chartjs-2';
 import 'chart.js';
 
 const StaffList = () => {
-  //state for storing list of Staff members
   const [StaffMembers, setStaffMembers] = useState([]);
-  //state for total staff members
   const [totalStaff, setTotalStaff] = useState(0);
-  //state for staff distribution by department
   const [departmentDistribution, setDepartmentDistribution] = useState({});
-  //state for tracking whether user is editing
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        backgroundColor: [
+          'red', 'blue', 'green', 'purple', 'yellow', 'orange'
+        ],
+      },
+    ],
+  });
   const [isEditing, setIsEditing] = useState(false);
-  //state for storing Staff data being edited
   const [editData, setEditData] = useState({
     firstName: '',
     lastName: '',
@@ -35,6 +41,7 @@ const StaffList = () => {
       }
 
       const data = await response.json();
+      //update total staff
       setStaffMembers(data);
       //calculation for total staff members
       setTotalStaff(data.length);
@@ -45,6 +52,18 @@ const StaffList = () => {
         return acc;
       }, {});
       setDepartmentDistribution(distribution);
+      //update chart data
+      setChartData({
+        labels: Object.keys(distribution),
+        datasets: [
+          {
+            data: Object.values(distribution),
+            backgroundColor: [
+              'red', 'blue', 'green', 'purple', 'yellow', 'orange'
+            ],
+          },
+        ],
+      });
     } catch (error) {
       console.error('Error fetching Staff members:', error);
     }
@@ -115,19 +134,7 @@ const StaffList = () => {
         <h3>Total Staff Members: {totalStaff}</h3>
         <h3>Staff Distribution by Department</h3>
         {Object.keys(departmentDistribution).length > 0 && (
-          <Pie
-            data={{
-              labels: Object.keys(departmentDistribution),
-              datasets: [
-                {
-                  data: Object.values(departmentDistribution),
-                  backgroundColor: [
-                    'red', 'blue', 'green', 'purple', 'yellow'
-                  ],
-                },
-              ],
-            }}
-          />
+          <Pie data={chartData} />
         )}
       </div>
       <table>
