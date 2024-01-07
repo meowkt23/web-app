@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Chart from 'chart.js/auto';
 
 const AppointmentsList = () => {
-  // state for storing list of Appointments
   const [appointments, setAppointments] = useState([]);
-  // state for tracking whether user is editing
   const [isEditing, setIsEditing] = useState(false);
-  // state for storing appointment data being edited
   const [editData, setEditData] = useState({
     date: '',
     time: '',
@@ -14,85 +12,130 @@ const AppointmentsList = () => {
     type: '',
   });
 
-  // fetch Appointments from the server
-  const fetchAppointments = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/appointments');
+  const chartTypeRef = useRef(null);
+  const chartStaffIdRef = useRef(null);
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch Appointments: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setAppointments(data);
-    } catch (error) {
-      console.error('Error fetching Appointments:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAppointments();
+  const createChart = useCallback((ref, data) => {
+    const ctx = ref.current.getContext('2d');
+    return new Chart(ctx, {
+      type: 'doughnut',
+      data: data,
+    });
   }, []);
 
-  // function to handle editing of appointment
-  const handleEdit = (appointment) => {
-    setIsEditing(true);
-    setEditData({ ...appointment });
-  };
-
-  // function to handle deletion of appointment
-  const handleDelete = async (_id) => {
-    try {
-      const response = await fetch(`http://localhost:3000/appointments/${_id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to delete appointment: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log(result);
-
-      // refresh appointment list after deletion
-      fetchAppointments();
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
+  const destroyChart = useCallback((chart, ref) => {
+    if (chart) {
+      chart.destroy();
+      ref.current.getContext('2d').clearRect(0, 0, ref.current.width, ref.current.height);
     }
-  };
+  }, []);
 
-  // function to save edited or new appointment
-  const saveAppointmentToServer = async () => {
-    const apiUrl = editData._id
-      ? `http://localhost:3000/appointments/${editData._id}`
-      : 'http://localhost:3000/appointments';
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/appointments');
 
-    try {
-      const response = await fetch(apiUrl, {
-        method: editData._id ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+        if (!response.ok) {
+          throw new Error(`Failed to fetch Appointments: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setAppointments(data);
+      } catch (error) {
+        console.error('Error fetching Appointments:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const typeCount = appointments.reduce((count, appointment) => {
+      count[appointment.type] = (count[appointment.type] || 0) + 1;
+      return count;
+    }, {});
+
+    const staffIdCount = appointments.reduce((count, appointment) => {
+      count[appointment.staffId] = (count[appointment.staffId] || 0) + 1;
+      return count;
+    }, {});
+
+    const typeLabels = Object.keys(typeCount);
+    const typeData = Object.values(typeCount);
+
+    const staffIdLabels = Object.keys(staffIdCount);
+    const staffIdData = Object.values(staffIdCount);
+
+    const newTypeChart = createChart(chartTypeRef, {
+      labels: typeLabels,
+      datasets: [
+        {
+          data: typeData,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(255, 205, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(255, 205, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(153, 102, 255, 1)',
+          ],
+          borderWidth: 1,
         },
-        body: JSON.stringify(editData),
-      });
+      ],
+    });
 
-      if (!response.ok) {
-        throw new Error(`Failed to save appointment: ${response.statusText}`);
-      }
+    const newStaffIdChart = createChart(chartStaffIdRef, {
+      labels: staffIdLabels,
+      datasets: [
+        {
+          data: staffIdData,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(255, 205, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(255, 205, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(153, 102, 255, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    });
 
-      // reset edit data after saving
-      setEditData(null);
-
-      // fetch updated Appointments
-      fetchAppointments();
-    } catch (error) {
-      console.error('Error saving appointment:', error);
-    }
-  };
+    return () => {
+      destroyChart(newTypeChart, chartTypeRef);
+      destroyChart(newStaffIdChart, chartStaffIdRef);
+    };
+  }, [appointments, createChart, destroyChart]);
 
   return (
     <div>
       <h2>Appointments</h2>
+
+      <div>
+        <h3>Type Chart</h3>
+        <canvas ref={chartTypeRef} width="600" height="400"></canvas>
+      </div>
+
+      <div>
+        <h3>Staff ID Chart</h3>
+        <canvas ref={chartStaffIdRef} width="600" height="400"></canvas>
+      </div>
+
+      <h3>Appointments</h3>
+
       <table>
         <thead>
           <tr>
@@ -101,6 +144,7 @@ const AppointmentsList = () => {
             <th>Patient ID</th>
             <th>Staff ID</th>
             <th>Type</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -135,7 +179,6 @@ const AppointmentsList = () => {
   );
 };
 
-// edit form component for editing or adding new appointment
 const EditForm = ({ editData, setEditData, setIsEditing, saveAppointmentToServer }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -178,6 +221,18 @@ const EditForm = ({ editData, setEditData, setIsEditing, saveAppointmentToServer
       </form>
     </div>
   );
+};
+
+const handleEdit = (appointment) => {
+  // Implement handleEdit logic
+};
+
+const handleDelete = (appointmentId) => {
+  // Implement handleDelete logic
+};
+
+const saveAppointmentToServer = () => {
+  // Implement saveAppointmentToServer logic
 };
 
 export default AppointmentsList;

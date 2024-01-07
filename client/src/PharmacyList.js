@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import Chart from 'chart.js/auto';
 
 const PharmacyList = () => {
-  //state for storing list of Medications
   const [medications, setMedications] = useState([]);
-  //state for tracking whether user is editing
   const [isEditing, setIsEditing] = useState(false);
-  //state for storing medication data being edited
   const [editData, setEditData] = useState({
     medicationName: '',
     manufacturer: '',
@@ -14,8 +12,9 @@ const PharmacyList = () => {
     expirationDate: '',
   });
 
-  //fetch Medications from server
-  const fetchMedications = async () => {
+  const [barChart, setBarChart] = useState(null);
+
+  const fetchMedications = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:3000/Pharmacy');
 
@@ -24,23 +23,81 @@ const PharmacyList = () => {
       }
 
       const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        console.error('Data is not an array:', data);
+        return;
+      }
+
+      console.log('Medication Data:', data);
       setMedications(data);
     } catch (error) {
       console.error('Error fetching Medications:', error);
     }
-  };
-
-  useEffect(() => {
-    fetchMedications();
   }, []);
 
-  //function to handle editing of medication
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchMedications();
+    };
+
+    fetchData();
+  }, [fetchMedications]);
+
+  useEffect(() => {
+    if (medications.length > 0) {
+      const ctx = document.getElementById('barChart');
+      console.log('Canvas Context:', ctx);
+
+      if (barChart instanceof Chart) {
+        // Update the existing chart's data and options
+        barChart.data.labels = medications.map((medication) => medication.medicationName);
+        barChart.data.datasets[0].data = medications.map((medication) => medication.currentStock);
+
+        // Update chart options if needed
+        // barChart.options = ...
+
+        // Update the chart
+        barChart.update();
+      } else {
+        // Create a new chart if it doesn't exist
+        const labels = medications.map((medication) => medication.medicationName);
+        const stockData = medications.map((medication) => medication.currentStock);
+
+        const newBarChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Current Stock',
+                data: stockData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              x: {
+                type: 'category',
+                labels: labels,
+              },
+            },
+          },
+        });
+
+        setBarChart(newBarChart);
+      }
+    }
+  }, [medications, barChart]);
+
   const handleEdit = (medication) => {
     setIsEditing(true);
     setEditData({ ...medication });
   };
 
-  //function to handle deletion of medication
   const handleDelete = async (_id) => {
     try {
       const response = await fetch(`http://localhost:3000/Pharmacy/${_id}`, {
@@ -54,14 +111,12 @@ const PharmacyList = () => {
       const result = await response.json();
       console.log(result);
 
-      // refresh medication list after deletion
       fetchMedications();
     } catch (error) {
       console.error('Error deleting medication:', error);
     }
   };
 
-  //function to save edited or new medication
   const saveMedicationToServer = async () => {
     const apiUrl = editData._id
       ? `http://localhost:3000/Pharmacy/${editData._id}`
@@ -80,10 +135,14 @@ const PharmacyList = () => {
         throw new Error(`Failed to save medication: ${response.statusText}`);
       }
 
-      // reset edit data after saving
-      setEditData(null);
+      setEditData({
+        medicationName: '',
+        manufacturer: '',
+        currentStock: '',
+        unitPrice: '',
+        expirationDate: '',
+      });
 
-      // fetch updated Medications
       fetchMedications();
     } catch (error) {
       console.error('Error saving medication:', error);
@@ -93,6 +152,10 @@ const PharmacyList = () => {
   return (
     <div>
       <h2>Pharmacy</h2>
+      <div>
+        <h3>Medication Stock Levels</h3>
+        <canvas id="barChart" width="400" height="200"></canvas>
+      </div>
       <table>
         <thead>
           <tr>
@@ -135,7 +198,6 @@ const PharmacyList = () => {
   );
 };
 
-//edit form component for editing or adding new medication
 const EditForm = ({ editData, setEditData, setIsEditing, saveMedicationToServer }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;

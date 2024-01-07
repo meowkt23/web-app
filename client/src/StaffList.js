@@ -1,14 +1,27 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Chart, ArcElement } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
+import { schemeCategory10 } from 'd3-scale-chromatic';
 
+//register ArcElement for chart.js use
 Chart.register(ArcElement);
 
+//set colour scheme to schemeCategory10
+const colorScale = schemeCategory10;
+
+const chartOptions = {
+  legend: {
+    display: true,
+    position: 'top',
+  },
+};
+
 const StaffList = () => {
+  //function to reset edit data to initial state
   const resetEditData = () => {
     setEditData(initialEditData);
   };
-
+  //initial state for editing staff data set to empty
   const initialEditData = {
     firstName: '',
     lastName: '',
@@ -21,47 +34,59 @@ const StaffList = () => {
       site: '',
     },
   };
+
+  //state variables
   const [editData, setEditData] = useState(initialEditData);
   const [staffMembers, setStaffMembers] = useState([]);
   const [totalStaff, setTotalStaff] = useState(0);
   const [departmentDistribution, setDepartmentDistribution] = useState({});
+  const labels = Object.keys(departmentDistribution);
+  const data = Object.values(departmentDistribution);
+  const backgroundColor = colorScale.slice(0, labels.length);
+
   const [chartData, setChartData] = useState({
-    labels: [],
+    labels: labels,
     datasets: [
       {
-        data: [],
-        backgroundColor: [
-          'red', 'blue', 'green', 'purple', 'yellow', 'orange'
-        ],
+        data: data,
+        backgroundColor: backgroundColor,
       },
     ],
   });
+
   const [isEditing, setIsEditing] = useState(false);
   
+    //function to clear chart data
+    const clearChartData = useCallback(() => {
+      setChartData((prevData) => ({
+        labels: Object.keys(departmentDistribution),
+        datasets: [
+          {
+            data: Object.values(departmentDistribution),
+            backgroundColor: colorScale.slice(0, Object.keys(departmentDistribution).length),
+          },
+        ],
+      }));
+    }, [departmentDistribution]);
+
+  //function to update chart data based on department distribution
   const updateChartData = useCallback((distribution) => {
-    setChartData((prevData) => ({
-      labels: Object.keys(distribution),
+    const labels = Object.keys(distribution);
+    const data = Object.values(distribution);
+    const backgroundColor = colorScale.slice(0, labels.length);
+  
+    setChartData({
+      labels: labels,
       datasets: [
         {
-          data: Object.values(distribution),
-          backgroundColor: ['red', 'blue', 'green', 'purple', 'yellow', 'orange'],
+          data: data,
+          backgroundColor: backgroundColor,
         },
       ],
-    }));
+    });
   }, [setChartData]);
   
-  const clearChartData = useCallback(() => {
-    setChartData((prevData) => ({
-      labels: Object.keys(departmentDistribution),
-      datasets: [
-        {
-          data: Object.values(departmentDistribution),
-          backgroundColor: [],
-        },
-      ],
-    }));
-  }, [departmentDistribution]);
-
+  //function to fetch staff members from server
   const fetchStaffMembers = useCallback(async () => {
     try {
       clearChartData();
@@ -80,14 +105,18 @@ const StaffList = () => {
         acc[departmentName] = (acc[departmentName] || 0) + 1;
         return acc;
       }, {});
-
+      //set and update department distribution data
       setDepartmentDistribution(distribution);
       updateChartData(distribution);
     } catch (error) {
       console.error('Error fetching Staff members:', error);
     }
-  }, [clearChartData], updateChartData);
+  }, [clearChartData, updateChartData]);
 
+  //reference for chart
+  const chartRef = useRef(null);
+
+  //effect hook to fetch staff members when component mounts
   useEffect(() => {
     const fetchData = async () => {
       await fetchStaffMembers();
@@ -95,17 +124,23 @@ const StaffList = () => {
 
     fetchData();
 
-    let currentChartRef = chartRef.current;
-
+    if (chartRef.current) {
+      chartRef.current.destroy();
+      chartRef.current = new Chart(chartRef.current.getContext('2d'), {
+        type: 'pie',
+        data: chartData,
+        options: chartOptions,
+      });
+    }
+  
     return () => {
       if (chartRef.current) {
         chartRef.current.destroy();
       }
     };
-  }, [fetchStaffMembers]);
+  }, [chartData, fetchStaffMembers]);
 
-  const chartRef = useRef(null);
-
+  //function to handle edit of staff member
   const handleEdit = (staff) => {
     setIsEditing(true);
     setEditData({ ...staff });
@@ -130,6 +165,7 @@ const StaffList = () => {
     }
   };
 
+  //function to save staff member to server
   const saveStaffMemberToServer = async () => {
     const apiUrl = editData._id ? `http://localhost:3000/Staff/${editData._id}` : 'http://localhost:3000/Staff';
 
@@ -153,23 +189,17 @@ const StaffList = () => {
     }
   };
 
+  //structure for rendering
   return (
     <div>
       <h2>Staff Members</h2>
       <div>
         <h3>Total Staff Members: {totalStaff}</h3>
         <h3>Staff Distribution by Department</h3>
-        {Object.keys(departmentDistribution).length > 0 && (
           <Pie
             data={chartData}
-            options={{
-              legend: {
-                display: true,
-                position: 'right',
-              },
-            }}
+            options={chartOptions}
           />
-        )}
       </div>
       <table>
         <thead>

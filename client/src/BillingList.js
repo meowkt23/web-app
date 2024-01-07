@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import Chart from 'chart.js/auto';
 
 const BillingList = () => {
-  // state for storing list of Billing entries
   const [billingEntries, setBillingEntries] = useState([]);
-  // state for tracking whether user is editing
   const [isEditing, setIsEditing] = useState(false);
-  // state for storing billing entry data being edited
   const [editData, setEditData] = useState({
     date: '',
     time: '',
@@ -23,7 +21,9 @@ const BillingList = () => {
     ],
   });
 
-  // fetch Billing entries from the server
+  const [totalChart, setTotalChart] = useState(null);
+  const [insurerClaimedChart, setInsurerClaimedChart] = useState(null);
+
   const fetchBillingEntries = async () => {
     try {
       const response = await fetch('http://localhost:3000/billing');
@@ -43,13 +43,73 @@ const BillingList = () => {
     fetchBillingEntries();
   }, []);
 
-  // function to handle editing of Billing entry
+  useEffect(() => {
+    if (billingEntries.length > 0) {
+      const totalLabels = ['Total Amount Paid', 'Total Amount Pending'];
+      const totalData = [
+        billingEntries.reduce((sum, entry) => (entry.paymentStatus === 'Paid' ? sum + entry.amount : sum), 0),
+        billingEntries.reduce((sum, entry) => (entry.paymentStatus === 'Pending' ? sum + entry.amount : sum), 0),
+      ];
+
+      const insurerClaimedLabels = ['Insurer Claimed - Yes', 'Insurer Claimed - No'];
+      const insurerClaimedData = [
+        billingEntries.reduce((sum, entry) => (entry.insurerClaimed && entry.paymentStatus === 'Paid' ? sum + entry.amount : sum), 0),
+        billingEntries.reduce((sum, entry) => (!entry.insurerClaimed && entry.paymentStatus === 'Paid' ? sum + entry.amount : sum), 0),
+      ];
+
+      if (totalChart instanceof Chart) {
+        totalChart.data.labels = totalLabels;
+        totalChart.data.datasets[0].data = totalData;
+        totalChart.update();
+      } else {
+        const newTotalChart = new Chart(document.getElementById('totalChart'), {
+          type: 'bar',
+          data: {
+            labels: totalLabels,
+            datasets: [
+              {
+                label: 'Total Amount',
+                data: totalData,
+                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                borderWidth: 1,
+              },
+            ],
+          },
+        });
+        setTotalChart(newTotalChart);
+      }
+
+      if (insurerClaimedChart instanceof Chart) {
+        insurerClaimedChart.data.labels = insurerClaimedLabels;
+        insurerClaimedChart.data.datasets[0].data = insurerClaimedData;
+        insurerClaimedChart.update();
+      } else {
+        const newInsurerClaimedChart = new Chart(document.getElementById('insurerClaimedChart'), {
+          type: 'bar',
+          data: {
+            labels: insurerClaimedLabels,
+            datasets: [
+              {
+                label: 'Total Amount Insurer Claimed',
+                data: insurerClaimedData,
+                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(128, 0, 128, 0.2)'],
+                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(128, 0, 128, 1)'],
+                borderWidth: 1,
+              },
+            ],
+          },
+        });
+        setInsurerClaimedChart(newInsurerClaimedChart);
+      }
+    }
+  }, [billingEntries, totalChart, insurerClaimedChart]);
+
   const handleEdit = (billingEntry) => {
     setIsEditing(true);
     setEditData({ ...billingEntry });
   };
 
-  // function to handle deletion of Billing entry
   const handleDelete = async (_id) => {
     try {
       const response = await fetch(`http://localhost:3000/billing/${_id}`, {
@@ -63,14 +123,12 @@ const BillingList = () => {
       const result = await response.json();
       console.log(result);
 
-      // refresh Billing entry list after deletion
       fetchBillingEntries();
     } catch (error) {
       console.error('Error deleting Billing entry:', error);
     }
   };
 
-  // function to save edited or new Billing entry
   const saveBillingEntryToServer = async () => {
     const apiUrl = editData._id
       ? `http://localhost:3000/billing/${editData._id}`
@@ -89,10 +147,7 @@ const BillingList = () => {
         throw new Error(`Failed to save Billing entry: ${response.statusText}`);
       }
 
-      // reset edit data after saving
       setEditData(null);
-
-      // fetch updated Billing entries
       fetchBillingEntries();
     } catch (error) {
       console.error('Error saving Billing entry:', error);
@@ -102,6 +157,19 @@ const BillingList = () => {
   return (
     <div>
       <h2>Billing</h2>
+
+      <div>
+        <h3>Total Amount Chart</h3>
+        <canvas id="totalChart" width="400" height="200"></canvas>
+      </div>
+
+      <div>
+        <h3>Insurer Claimed Chart</h3>
+        <canvas id="insurerClaimedChart" width="400" height="200"></canvas>
+      </div>
+
+      <h3>Billing Entries</h3>
+
       <table>
         <thead>
           <tr>
@@ -160,7 +228,6 @@ const BillingList = () => {
   );
 };
 
-// edit form component for editing or adding new Billing entry
 const EditForm = ({ editData, setEditData, setIsEditing, saveBillingEntryToServer }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
